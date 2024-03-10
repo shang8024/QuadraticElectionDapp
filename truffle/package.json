@@ -1,0 +1,14 @@
+{
+  "name": "truffle-project",
+  "version": "0.1.0",
+  "description": "Truffle project with SimpleStorage contract",
+  "scripts": {
+    "test": "truffle test"
+  },
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^2.1.7"
+  },
+  "devDependencies": {
+    "hardhat": "^2.21.0"
+  }
+}
