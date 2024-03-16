@@ -94,7 +94,7 @@ contract Election {
         voters[msg.sender].voted += votes;
 
         //update candidate vote Count
-        candidates[_candidateId].voteCount += votes;
+        candidates[_candidateId].voteCount += uint256(votes);
     }
 
 }

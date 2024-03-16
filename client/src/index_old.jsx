@@ -6,7 +6,6 @@ import "./styles.css";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    {/* <App /> */}
-    <h1>User Login Page</h1>
+    <App />
   </React.StrictMode>
 );
