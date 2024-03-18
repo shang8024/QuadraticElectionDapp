@@ -5,21 +5,21 @@ import {
   , Box
   , Typography
   , TextField
-  , FormControlLabel
-  , Checkbox
   , Button
   , Grid
   , Link
 } from "@mui/material";
+import useEth from "../../contexts/EthContext/useEth";
 
-function LoginPage() {
+function SignupPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { state, dispatch } = useEth();
 
   const handleSubmit = (event) => {
     event.preventDefault();
     // Handle login logic here, e.g., validation, API calls
-    console.log("Login with:", username, password);
+    console.log("Signup with:", username, password, state?.accounts[0]);
   };
 
   return (
@@ -33,9 +33,12 @@ function LoginPage() {
           }}
       >
         <Typography component="h1" variant="h2">
-            User Login
+            User Signup
         </Typography>
         <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
+          <Typography component="h3" variant="h6">
+            Adddress: {state && state.accounts ? state.accounts[0] : "Not connected"}
+          </Typography>
           <TextField
             margin="normal"
             required
@@ -60,27 +63,19 @@ function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-          />
           <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
           >
-              Login
+              Sign Up
           </Button>
           <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link variant="body2" component={RouterLink} to="/signup">
-                {"Don't have an account? Sign Up"}
+            <Grid item xs/>
+            <Grid item >
+              <Link variant="body2" component={RouterLink} to="/">
+                {"Already have an account? Sign in"}
               </Link>
             </Grid>
           </Grid>
@@ -90,4 +85,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default SignupPage;
