@@ -20,7 +20,7 @@ function VoteBtn({ candidateId }) {
       return;
     }
     const newValue = parseInt(inputValue);
-    await contract.methods.vote(candidateId,newValue).send({ from: accounts[0] });
+    // await contract.methods.vote(candidateId,newValue).send({ from: accounts[0] });
   };
 
   return (
