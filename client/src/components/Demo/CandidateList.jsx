@@ -19,16 +19,16 @@ function CandidateList() {
 
   const [candidates, setCandidates] = useState([]);
 
-  const getCandidates = async () => {
-    const list = await contract.methods.getCandidates().call();
-    setCandidates(list);
-  };
+  // const getCandidates = async () => {
+  //   const list = await contract.methods.getCandidates().call();
+  //   setCandidates(list);
+  // };
 
-    useEffect(() => {
-        if (contract) {
-            getCandidates();
-        }
-    }, [contract]);
+  //   useEffect(() => {
+  //       if (contract) {
+  //           getCandidates();
+  //       }
+  //   }, [contract]);
 
   return (
     <div className="container">
