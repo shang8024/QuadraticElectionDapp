@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./QuadraDAO.sol";
 
 contract Election is AccessControl {
     // bytes32 public immutable STAKEHOLDER_ROLE = keccak256("STAKEHOLDER");
@@ -9,7 +10,7 @@ contract Election is AccessControl {
     uint32 immutable MIN_APPROVAL_VOTES = 1;
     uint32 immutable MIN_APPROVAL_RATES = 25;
     uint256 immutable MIN_VOTER_TOKENS = 10;
-    // address private immutable _token;
+    address private immutable _token;
 
     enum ProposalStatus {
         IN_PROGRESS,
@@ -60,17 +61,17 @@ contract Election is AccessControl {
     //Store Proposal Count
     uint256 public proposalsCount;
 
-    constructor(address admin) {
-        // _token = token;
+    constructor(address token, address admin) {
+        _token = token;
         _grantRole(ADMIN_ROLE, admin);
     }
 
-    // function _isStakeholder(address _voter) public view {
-    //     // if the voter has a token in the Token contract
-    //     // cast the function BalanceOf to the token contract QUadraDAO with address _token
-    //     QuadraDAO token = QuadraDAO(_token);
-    //     require(token.balanceOf(_voter) > 0, "Voter does not have Governance NFT");
-    // }
+    function _isStakeholder(address _voter) public view {
+        // if the voter has a token in the Token contract
+        // cast the function BalanceOf to the token contract QUadraDAO with address _token
+        QuadraDAO token = QuadraDAO(_token);
+        require(token.balanceOf(_voter) > 0, "Voter does not have Governance NFT");
+    }
 
     function resetVotingPower(address _voter) public onlyRole(ADMIN_ROLE) {
         voters[_voter].tokens = MIN_VOTER_TOKENS; 
