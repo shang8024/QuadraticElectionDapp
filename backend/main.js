@@ -1,84 +1,63 @@
 const express = require('express');
-const { Pool } = require('pg');
-const session = require('express-session');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 5000;
 
-// PostgreSQL connection setup
-const pool = new Pool({
-  user: 'yourUsername',
-  host: 'localhost',
-  database: 'yourDatabaseName',
-  password: 'yourPassword',
-  port: 5432,
+app.use(cors()); // Enable CORS for all requests
+app.use(express.json()); // Middleware to parse JSON bodies
+
+// Temporary storage for example purposes
+const users = {}; // username as key, password hash as value
+const SECRET_KEY = "secret"; // Ideally, use an environment variable in production for the secret
+
+// Handle signup requests
+app.post('/signup', async (req, res) => {
+  const { username, password } = req.body;
+  console.log("Received signup request for username:", username);
+
+  // Check if username already exists
+  if (users[username]) {
+    return res.status(409).json({ error: 'Username already exists! Sorry :('});
+  }
+
+  // Validate input
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Both username and password are required :)' });
+  }
+
+  // Hash password and create user
+  const hashedPassword = await bcrypt.hash(password, 10);
+  users[username] = hashedPassword;
+  
+  // Respond with success message
+  res.status(201).json({ message: 'User created successfully.' });
 });
 
-// Express application setup
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(session({
-  secret: 'secret',
-  resave: false,
-  saveUninitialized: true
-}));
-app.use(passport.initialize());
-app.use(passport.session());
+// Handle login requests
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
 
-// Passport local strategy
-passport.use(new LocalStrategy(async (username, password, done) => {
-  try {
-    const res = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-    if (res.rows.length > 0) {
-      const user = res.rows[0];
-      // Password check (in real-world use bcrypt.compare)
-      if (user.password !== password) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    } else {
-      return done(null, false, { message: 'Incorrect username.' });
-    }
-  } catch (err) {
-    return done(err);
+  // Check if user exists
+  const user = users[username];
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
   }
-}));
 
-// Serialize and deserialize user
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
-  try {
-    const res = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-    if (res.rows.length > 0) {
-      const user = res.rows[0];
-      done(null, user);
-    } else {
-      done(new Error('User not found.'));
-    }
-  } catch (err) {
-    done(err);
+  // Validate password
+  const isMatch = await bcrypt.compare(password, user);
+  if (!isMatch) {
+    return res.status(400).json({ error: 'Invalid password' });
   }
-});
 
-// Routes
-app.get('/', (req, res) => res.send('Election Smart Contract Backend Running'));
-
-// Login route
-app.post('/login', passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/login',
-  failureFlash: false
-}));
-
-// Logout route
-app.get('/logout', (req, res) => {
-  req.logout();
-  res.redirect('/');
+  // Generate and return a JWT token
+  const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: '1h' });
+  res.status(200).json({ token });
 });
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

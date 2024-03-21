@@ -5,53 +5,21 @@ import {
   , Box
   , Typography
   , TextField
+  , FormControlLabel
+  , Checkbox
   , Button
   , Grid
   , Link
 } from "@mui/material";
-import useEth from "../../contexts/EthContext/useEth";
 
-
-function SignupPage() {
+function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { state, dispatch } = useEth();
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-
-    try {
-      const response = await fetch('http://localhost:5000/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-
-        body: JSON.stringify({
-          username,
-          password,
-
-          account: state?.accounts[0] 
-        }),
-      });
-
-      const data = await response.json();
-
-      if(response.ok) {
-        alert(data.message);
-        // Here, you can perform any additional actions on successful signup,
-        // like redirecting to another page or clearing the form
-        // Example: Navigate to the login page or dashboard
-      } else {
-        alert(data.error || 'Signup failed');
-      }
-    } catch (error) {
-      console.error('Error during signup:', error);
-      alert('Signup failed. Please try again later.');
-    }
-
     // Handle login logic here, e.g., validation, API calls
-    console.log("Signup with:", username, password, state?.accounts[0]);
+    console.log("Login with:", username, password);
   };
 
   return (
@@ -65,12 +33,9 @@ function SignupPage() {
           }}
       >
         <Typography component="h1" variant="h2">
-            User Signup
+            User Login
         </Typography>
         <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
-          <Typography component="h3" variant="h6">
-            Adddress: {state && state.accounts ? state.accounts[0] : "Not connected"}
-          </Typography>
           <TextField
             margin="normal"
             required
@@ -95,19 +60,27 @@ function SignupPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+          />
           <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
           >
-              Sign Up
+              Login
           </Button>
           <Grid container>
-            <Grid item xs/>
-            <Grid item >
-              <Link variant="body2" component={RouterLink} to="/">
-                {"Already have an account? Sign in"}
+            <Grid item xs>
+              <Link href="#" variant="body2">
+                Forgot password?
+              </Link>
+            </Grid>
+            <Grid item>
+              <Link variant="body2" component={RouterLink} to="/signup">
+                {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
           </Grid>
@@ -117,4 +90,4 @@ function SignupPage() {
   );
 }
 
-export default SignupPage;
+export default LoginPage;
