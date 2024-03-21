@@ -12,7 +12,10 @@
 2. On a seperate terminal window, run
 `cd truffle` then `truffle migrate --network development --reset`
 
-3. `cd ../client` then `npm run start`
+3. `cd ../backend` then `node main.js`
+
+4. On a seperate terminal window, run
+`cd ../client` then `npm run start`
 
 ## FAQ
 
