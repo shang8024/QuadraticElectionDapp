@@ -6,7 +6,7 @@ function App() {
   return (
     <EthProvider>
       <div id="App">
-        <div className="container">
+        <div>
           <Demo />
           <hr />
           <Footer />

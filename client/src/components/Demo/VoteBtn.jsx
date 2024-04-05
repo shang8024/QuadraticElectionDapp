@@ -1,17 +1,25 @@
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import useEth from "../../contexts/EthContext/useEth";
 
-function VoteBtn({ candidateId }) {
-  const { state: { contract, accounts } } = useEth();
+function VoteBtn({ candidateId, account }) {
+  const {
+    state: { contract, accounts },
+  } = useEth();
+
+  console.log("VoteBtn accounts");
+  console.log(accounts);
+
   const [inputValue, setInputValue] = useState("");
 
-  const handleInputChange = e => {
+  const handleInputChange = (e) => {
     if (/^\d+$|^$/.test(e.target.value)) {
       setInputValue(e.target.value);
     }
   };
 
-  const vote = async e => {
+  const vote = async (e) => {
     if (e.target.tagName === "INPUT") {
       return;
     }
@@ -20,17 +28,26 @@ function VoteBtn({ candidateId }) {
       return;
     }
     const newValue = parseInt(inputValue);
-    await contract.methods.vote(candidateId,newValue).send({ from: accounts[0] });
+
+    console.log("sending from account: " + account);
+    await contract.methods
+      .vote(candidateId, newValue)
+      .send({ from: account });
   };
 
   return (
-    <div onClick={vote} className="input-btn">
-        vote(<input
+    <div className="flex">
+      <div className="flex w-full max-w-sm items-center space-x-2">
+        <Input
           type="text"
-          placeholder="uint"
+          placeholder="Number of votes"
           value={inputValue}
           onChange={handleInputChange}
-        />)
+        />
+        <Button type="submit" onClick={vote}>
+          Vote
+        </Button>
+      </div>
     </div>
   );
 }

@@ -1,16 +1,30 @@
-function Link({ uri, text }) {
-  return <a href={uri} target="_blank" rel="noreferrer">{text}</a>;
-}
+import { Button } from "@/components/ui/button";
+
+// function Link({ uri, text }) {
+//   return <a href={uri} target="_blank" rel="noreferrer" className="p-5">
+//     {text}
+//     </a>;
+// }
 
 function Footer() {
   return (
     <footer>
       <h2>More resources</h2>
-      <Link uri={"https://trufflesuite.com"} text={"Truffle"} />
-      <Link uri={"https://reactjs.org"} text={"React"} />
-      <Link uri={"https://soliditylang.org"} text={"Solidity"} />
-      <Link uri={"https://ethereum.org"} text={"Ethereum"} />
-    </footer >
+      <Button variant="link" className="text-black">
+        <a href="href=https://trufflesuite.com">
+        Truffle
+        </a>
+      </Button>
+      <Button variant="link" className="text-black" href={"https://reactjs.org"}>
+      React
+      </Button>
+      <Button variant="link" className="text-black" href={"https://soliditylang.org"}>
+      Solidity
+      </Button>
+      <Button variant="link" className="text-black" href={"https://ethereum.org"}>
+      Ethereum
+      </Button>
+    </footer>
   );
 }
 
