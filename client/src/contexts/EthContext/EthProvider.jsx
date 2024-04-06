@@ -1,10 +1,27 @@
 import React, { useReducer, useCallback, useEffect } from "react";
 import Web3 from "web3";
 import EthContext from "./EthContext";
-import { reducer, actions, initialState } from "./state";
+import { initialState as defaultInitialState, reducer, actions } from './state';
+
+const loadInitialState = () => {
+  const usersData = localStorage.getItem('users');
+  return usersData ? { ...defaultInitialState, users: JSON.parse(usersData) } : defaultInitialState;
+};
 
 function EthProvider({ children }) {
+  const initialState = loadInitialState();
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  const addUser = (username, password) => {
+    const updatedUsers = { ...state.users, [username]: password };
+    dispatch({
+      type: actions.addUser,
+      data: {username, password},
+    });
+    localStorage.setItem('users', JSON.stringify(updatedUsers));
+    console.log('Added user:', username); // Confirm user is added
+    console.log('Updated state:', state); // Check the updated state
+  };
 
   const init = useCallback(
     async artifact => {
@@ -54,10 +71,7 @@ function EthProvider({ children }) {
   }, [init, state.artifact]);
 
   return (
-    <EthContext.Provider value={{
-      state,
-      dispatch
-    }}>
+    <EthContext.Provider value={{ ...state, addUser}}>
       {children}
     </EthContext.Provider>
   );

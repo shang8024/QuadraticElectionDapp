@@ -1,25 +1,39 @@
 import React, { useState } from "react";
 import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useEth } from "../../contexts/EthContext";
 import {
   Container
   , Box
   , Typography
   , TextField
+  , FormControlLabel
+  , Checkbox
   , Button
   , Grid
   , Link
 } from "@mui/material";
-import useEth from "../../contexts/EthContext/useEth";
 
-function SignupPage() {
+function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { state, dispatch } = useEth();
+  const { users } = useEth();
+  const navigate = useNavigate();
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
     // Handle login logic here, e.g., validation, API calls
-    console.log("Signup with:", username, password, state?.accounts[0]);
+    console.log('Current users:', users); 
+    if (users && users[username]=== password) {
+      console.log("Login successful");
+      navigate('/user');
+    } else {
+      alert('Invalid username or password');
+    }
+
+
+    console.log("Login with:", username, password);
   };
 
   return (
@@ -33,12 +47,9 @@ function SignupPage() {
           }}
       >
         <Typography component="h1" variant="h2">
-            User Signup
+            User Login
         </Typography>
         <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
-          <Typography component="h3" variant="h6">
-            Adddress: {state && state.accounts ? state.accounts[0] : "Not connected"}
-          </Typography>
           <TextField
             margin="normal"
             required
@@ -63,19 +74,27 @@ function SignupPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+          />
           <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
           >
-              Sign Up
+              Login
           </Button>
           <Grid container>
-            <Grid item xs/>
-            <Grid item >
-              <Link variant="body2" component={RouterLink} to="/">
-                {"Already have an account? Sign in"}
+            <Grid item xs>
+              <Link href="#" variant="body2">
+                Forgot password?
+              </Link>
+            </Grid>
+            <Grid item>
+              <Link variant="body2" component={RouterLink} to="/signup">
+                {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
           </Grid>
@@ -85,4 +104,4 @@ function SignupPage() {
   );
 }
 
-export default SignupPage;
+export default LoginPage;

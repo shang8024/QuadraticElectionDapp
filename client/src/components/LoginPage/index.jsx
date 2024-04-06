@@ -1,54 +1,53 @@
 import React, { useState } from "react";
 import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useEth } from "../../contexts/EthContext";
 import {
-  Container, Box, Typography, TextField, FormControlLabel,
-  Checkbox, Button, Grid, Link
+  Container
+  , Box
+  , Typography
+  , TextField
+  , FormControlLabel
+  , Checkbox
+  , Button
+  , Grid
+  , Link
 } from "@mui/material";
 
 function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { users } = useEth();
+  const navigate = useNavigate();
+  
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    
-    // Replace with your actual backend endpoint
-    const loginEndpoint = 'http://localhost:5000/login';
-    
-    try {
-      const response = await fetch(loginEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-      
-      const data = await response.json();
-      console.log("Login successful:", data);
-      // Handle post-login logic here, e.g., redirect, save the auth token, etc.
-    } catch (error) {
-      console.error("Login error:", error);
-      // Handle error state here, e.g., show an error message to the user
+    // Handle login logic here, e.g., validation, API calls
+    console.log('Current users:', users); 
+    if (users && users[username]=== password) {
+      console.log("Login successful");
+      navigate('/user');
+    } else {
+      alert('Invalid username or password');
     }
+
+
+    console.log("Login with:", username, password);
   };
 
   return (
     <Container component="main" maxWidth="xs">
       <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
       >
         <Typography component="h1" variant="h2">
-          User Login
+            User Login
         </Typography>
         <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
           <TextField
@@ -76,16 +75,16 @@ function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
           />
           <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
           >
-            Login
+              Login
           </Button>
           <Grid container>
             <Grid item xs>
