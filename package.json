@@ -1,0 +1,23 @@
+{
+  "name": "quadraticelectiondapp",
+  "version": "1.0.0",
+  "description": "1. install node\r 2. install Truffle and Ganache globally\r `npm install -g truffle ganache-cli`\r 3. install Metamask",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.19.1",
+    "express-session": "^1.18.0",
+    "jsonwebtoken": "^9.0.2",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "pg": "^8.11.3"
+  }
+}
