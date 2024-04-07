@@ -3,9 +3,11 @@ import ReactDOM from "react-dom/client";
 import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import UserPage from "./components/UserPage";
+import AdminPage from "./components/AdminPage";
+import App from "./App";
 import Demo from "./components/Demo";
 import { EthProvider } from './contexts/EthContext/'; 
-import App from "./App";
+
 import "./styles.css";
 import { UserProvider } from './contexts/UserContext/UserContext';
 import { createTheme, ThemeProvider } from "@mui/material";
@@ -30,6 +32,7 @@ root.render(
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/user" element={<UserPage />} />
               <Route path="/vote" element={<App/>}/>
+              <Route path="/admin" element={<AdminPage />}/>
             </Routes>
           </Router>
         </UserProvider>

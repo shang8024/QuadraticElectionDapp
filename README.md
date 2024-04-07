@@ -18,6 +18,12 @@
 3. `cd ../client` then `npm run start`
 
 ## FAQ
+- **How to access different user priviledges?**
+   For admin roles, signup then login with username and password both to 'admin' (NOTE: case sensitive, all lowercase). It will take you to list of all users where you can whitelist them and mint nfts for them.
+
+   For normal user/voter, sign up and login with any username or password, where you can request to get whitelisted and access nfts for anonymous voting. 
+
+   When a user requests the services mentioned above, the list on the admin page is updated in real time (you might to refresh the page). 
 
 - **How do I use this with Ganache (or any other network)?**
 
@@ -26,3 +32,5 @@
 - **Where can I find more resources?**
 
   This Box is a sweet combo of [Truffle](https://trufflesuite.com) and [Webpack](https://webpack.js.org). Either one would be a great place to start!
+
+

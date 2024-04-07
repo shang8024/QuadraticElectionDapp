@@ -21,12 +21,20 @@ function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const userPassword = users[username];
-    if (userPassword && userPassword === password) {
-      console.log("Login successful");
-      navigate('/user'); // Adjust as needed
+    // Check if the credentials are for an admin
+    if (username === 'admin' && password === 'admin') {
+      console.log("Admin login successful");
+      navigate('/admin'); // Navigate to admin page for admin
     } else {
-      alert('Invalid username or password');
+      // For regular users, verify against the stored users context
+      const userPassword = users[username];
+      if (userPassword && userPassword === password) {
+        console.log("Login successful");
+        localStorage.setItem('currentUser', username); 
+        navigate('/user'); // Navigate to user page for regular users
+      } else {
+        alert('Invalid username or password');
+      }
     }
   };
 

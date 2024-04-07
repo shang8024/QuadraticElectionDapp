@@ -30,6 +30,11 @@ html {
   height: 100%;
 }
 
+.btn {
+  background-color: '#228B22';
+  color: white;
+}
+
 code {
   display: block;
   white-space: pre-wrap;
