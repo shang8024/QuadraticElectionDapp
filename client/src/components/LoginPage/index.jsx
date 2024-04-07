@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import { Link as RouterLink } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { useEth } from "../../contexts/EthContext";
+import React, { useState } from 'react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useUser } from '../../contexts/UserContext/UserContext'; // Adjust the import path as needed
 import {
   Container
   , Box
@@ -15,39 +14,34 @@ import {
 } from "@mui/material";
 
 function LoginPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const { users } = useEth();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const { users } = useUser();
   const navigate = useNavigate();
-  
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Handle login logic here, e.g., validation, API calls
-    console.log('Current users:', users); 
-    if (users && users[username]=== password) {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const userPassword = users[username];
+    if (userPassword && userPassword === password) {
       console.log("Login successful");
-      navigate('/user');
+      navigate('/user'); // Adjust as needed
     } else {
       alert('Invalid username or password');
     }
-
-
-    console.log("Login with:", username, password);
   };
 
   return (
     <Container component="main" maxWidth="xs">
       <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
       >
         <Typography component="h1" variant="h2">
-            User Login
+           User Login
         </Typography>
         <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
           <TextField
@@ -60,7 +54,7 @@ function LoginPage() {
             autoComplete="username"
             autoFocus
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={e => setUsername(e.target.value)}
           />
           <TextField
             margin="normal"
@@ -72,19 +66,19 @@ function LoginPage() {
             id="password"
             autoComplete="current-password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
           />
-          <FormControlLabel
+           <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
           />
           <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
           >
-              Login
+            Login
           </Button>
           <Grid container>
             <Grid item xs>
