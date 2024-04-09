@@ -104,7 +104,7 @@ contract Election is AccessControl {
             // console.log("Admin is creating a proposal");
         } else {
             // console.log("Voter is creating a proposal");
-            require(_isStakeholder(msg.sender), "Voter must be a stakeholder");
+            require(_isStakeholder(msg.sender), "Proposal creator must be a stakeholder");
         }
         proposalsCount++;
         proposals[proposalsCount] = Proposal({
@@ -155,7 +155,12 @@ contract Election is AccessControl {
 
     function vote(uint256 _proposalId, uint256 _votes, VoteStatus _choose) public {
         //TODO: check voter eligibility
-        // _isStakeholder(msg.sender);
+        if (hasRole(ADMIN_ROLE, msg.sender) || msg.sender == _token || msg.sender == address(this)) {
+            // console.log("Admin is creating a proposal");
+        } else {
+            // console.log("Voter is creating a proposal");
+            require(_isStakeholder(msg.sender), "Proposal creator must be a stakeholder");
+        }
 
         //initialize voter if not already initialized
         if(!voters[msg.sender].valid){

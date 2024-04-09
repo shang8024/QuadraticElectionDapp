@@ -6,11 +6,11 @@ function VoteBtn({ candidateId }) {
   const { state: { contract, accounts } } = useEth();
   const [inputValue, setInputValue] = useState("");
 
-  const handleInputChange = e => {
-    if (/^\d+$|^$/.test(e.target.value)) {
-      setInputValue(e.target.value);
-    }
-  };
+  // const handleInputChange = e => {
+  //   if (/^\d+$|^$/.test(e.target.value)) {
+  //     setInputValue(e.target.value);
+  //   }
+  // };
 
   const vote = async e => {
     // if (e.target.tagName === "INPUT") {
