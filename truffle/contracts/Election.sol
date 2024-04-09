@@ -70,6 +70,10 @@ contract Election is AccessControl {
         // create   a new proposal
     }
 
+    function getNFTAddress() public view returns (address) {
+        return _token;
+    }
+
     function _isStakeholder(address _voter) public view returns (bool) {
         // if the voter has a token in the Token contract
         // cast the function BalanceOf to the token contract QUadraDAO with address _token

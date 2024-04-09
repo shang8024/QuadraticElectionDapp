@@ -14,17 +14,19 @@ function EthProvider({ children }) {
         const accounts = await web3.eth.requestAccounts();
         const networkID = await web3.eth.net.getId();
         const { abi } = artifact;
-        let address, contract;
+        let address, contract, nft_contract_address;
         try {
           address = artifact.networks[networkID].address;
 
+
           contract = new web3.eth.Contract(abi, address);
+          nft_contract_address = contract.methods.getNFTAddress().call();
         } catch (err) {
           console.error(err);
         }
         dispatch({
           type: actions.init,
-          data: { artifact, web3, accounts, networkID, contract }
+          data: { artifact, web3, accounts, networkID, contract, nft_contract_address }
         });
       }
     }, []);
@@ -32,7 +34,7 @@ function EthProvider({ children }) {
   useEffect(() => {
     const tryInit = async () => {
       try {
-        const artifact = require("../../contracts/Election.json");
+        const elction_artifact = require("../../contracts/Election.json");
         init(artifact);
       } catch (err) {
         console.error(err);
