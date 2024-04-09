@@ -17,6 +17,21 @@
 
 3. `cd ../client` then `npm run start`
 
+
+## Notes 
+
+1. Some parts of the anonymous voting have been hardcoded (temporarily):
+   - In AdminPage/index.js, 
+      - contract address of the deployed 'QuadraDAO' from the terminal (after running "truffle migrate --reset" before "client/npm run start")
+      - user account address (in the hangleGenerateNFTs function and in the button when passed as the parameter). 
+      
+         NOTE: This is the second address from the ganache-cli. 
+      
+   - In truffle/migrations/1_deploy_election.js 
+      - admin account address
+      
+         NOTE: This is the first address from the ganache-cli.
+
 ## FAQ
 - **How to access different user priviledges?**
    For admin roles, signup then login with username and password both to 'admin' (NOTE: case sensitive, all lowercase). It will take you to list of all users where you can whitelist them and mint nfts for them.
