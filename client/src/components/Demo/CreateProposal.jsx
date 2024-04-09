@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {useNavigate} from "react-router-dom";
 import dayjs, { Dayjs } from "dayjs";
 import useEth from "../../contexts/EthContext/useEth";
 import {
@@ -25,13 +26,23 @@ const CreateProposal = () => {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [successSubmit, setSuccessSubmit] = useState(false);
+  const navigate = useNavigate();
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setSuccessSubmit(false);
     console.log(dayjs(startDate).unix(), dayjs(endDate).unix());
-    contract.methods.createProposal(title, description).send({ from: accounts[0] })
+    await contract.methods.createProposal(title, description).send({ from: accounts[0] }).then((res) => {
+        console.log("Proposal created");
+        setSuccessSubmit(true);
+        setLoading(false);
+        // go to '/vote' page
+        navigate('/vote');
+    }).catch((err) => {
+        console.log(err);
+        setLoading(false);
+    });
     
   };
 
@@ -86,7 +97,7 @@ const CreateProposal = () => {
           <Grid container spacing={0} columns={8}>
             <Grid item xs={4} width='100%'>
                 <DatePicker 
-                    value={endDate}
+                    value={startDate}
                     color='secondary'
                     label='Start Date'
                     onChange={(newDate) => setStartDate(newDate)}

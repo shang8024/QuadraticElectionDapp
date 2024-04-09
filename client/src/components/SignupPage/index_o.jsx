@@ -5,6 +5,8 @@ import {
 } from "@mui/material";
 // Import your useEth hook or context as needed
 
+
+
 function SignupPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +18,7 @@ function SignupPage() {
     event.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/signup', {
+      const response = await fetch(`${process.env.BASE_URL}/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +130,7 @@ function SignupPage() {
     event.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/signup', {
+      const response = await fetch(`${process.env.BASE_URL}/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
