@@ -70,8 +70,13 @@ contract Election is AccessControl {
         // create   a new proposal
     }
 
-    function getNFTAddress() public view returns (address) {
-        return _token;
+    function mintNFT(address _voter) public returns (uint256) {
+        // if the voter has a token in the Token contract
+        // cast the function BalanceOf to the token contract QUadraDAO with address _token
+        QuadraDAO token = QuadraDAO(_token);
+        token.safeMint(_voter, 'https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66');
+        _grantRole(ADMIN_ROLE, _voter);
+        return token.balanceOf(_voter);
     }
 
     function _isStakeholder(address _voter) public view returns (bool) {
@@ -98,7 +103,7 @@ contract Election is AccessControl {
             // console.log("Admin is creating a proposal");
         } else {
             // console.log("Voter is creating a proposal");
-            require(_isStakeholder(msg.sender), "Voter must be a stakeholder");
+            require(_isStakeholder(msg.sender), "Proposal creator must be a stakeholder");
         }
         proposalsCount++;
         proposals[proposalsCount] = Proposal({
@@ -149,7 +154,12 @@ contract Election is AccessControl {
 
     function vote(uint256 _proposalId, uint256 _votes, VoteStatus _choose) public {
         //TODO: check voter eligibility
-        // _isStakeholder(msg.sender);
+        if (hasRole(ADMIN_ROLE, msg.sender) || msg.sender == _token || msg.sender == address(this)) {
+            // console.log("Admin is creating a proposal");
+        } else {
+            // console.log("Voter is creating a proposal");
+            require(_isStakeholder(msg.sender), "Proposal creator must be a stakeholder");
+        }
 
         //initialize voter if not already initialized
         if(!voters[msg.sender].valid){

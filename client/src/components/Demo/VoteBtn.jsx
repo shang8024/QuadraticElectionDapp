@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useEth from "../../contexts/EthContext/useEth";
+import {Button} from "@mui/material";
 
 function VoteBtn({ candidateId }) {
   const { state: { contract, accounts } } = useEth();
@@ -24,8 +25,9 @@ function VoteBtn({ candidateId }) {
   };
 
   return (
-    <div onClick={vote} className="input-btn">
-    </div>
+    <Button onClick={vote} variant="contained" color="primary">
+      Vote
+    </Button>
   );
 }
 
