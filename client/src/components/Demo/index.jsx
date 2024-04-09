@@ -32,7 +32,7 @@ function Demo() {
       <p>Account address: {state.accounts ? state.accounts[0] : ''}</p>
       <p>Remaining Tokens: {tokens}</p>
       <p>Votes Casted: {votesCasted}</p>
-      <p><btn onClick={resetToken}>Refresh</btn></p>
+      <p><button onClick={resetToken}>Refresh</button></p>
       <hr />
       <div className="contract-container">
         <ProposalList />

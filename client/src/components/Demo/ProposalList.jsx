@@ -30,7 +30,12 @@ function ProposalList() {
   const getProposals = async () => {
     const list = await contract.methods.getProposals().call();
     console.log(list);
-    setProposals(list);
+    //setProposals(list);
+    if (list) {
+      setProposals(list);
+    } else {
+        setProposals([]); // Ensure proposals is always an array
+    }
   };
 
     useEffect(() => {
