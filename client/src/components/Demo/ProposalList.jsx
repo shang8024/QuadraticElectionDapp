@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useEth from "../../contexts/EthContext/useEth";
+import { Button } from "@mui/material";
 
 const proposalStatus = {
   IN_PROGRESS: 0,
@@ -8,12 +9,15 @@ const proposalStatus = {
   ENDED: 3,
 };
 
-const ProposalItem = ({ id, title, voteCount,reload}) => {
-    return (
+const ProposalItem = ({ proposal}) => {
+  const {id, title, status, downvotes, upvotes} = proposal;
+  const totalVotes = parseInt(downvotes) + parseInt(upvotes);
+  return (
         <tr>
             <th>{id}</th>
             <td>{title}</td>
-            <td>{voteCount}</td>
+            <td>{totalVotes}</td>
+            <td>{status == proposalStatus.IN_PROGRESS ? "In Progress" : status == proposalStatus.APPROVED ? "Approved" : status == proposalStatus.REJECTED ? "Rejected" : "Ended"}</td>
         </tr>
     );
 };
@@ -46,18 +50,25 @@ function ProposalList() {
             !contract ? <div id="loader"><p className="text-center">Loading...</p></div>
             : 
             <div id="content">
+            <Button
+            fullWidth
+            variant="contained"
+            href="/createProposal"
+            >
+            Create Proposal
+            </Button>
             <table className="table">
               <thead>
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Votes</th>
-                  <th scope="col">Vote</th>
+                  <th scope="col">Title</th>
+                  <th scope="col">Voted</th>
+                  <th scope="col">Status</th>
                 </tr>
               </thead>
               <tbody id="proposalsResults">
-                {proposals.map((candidate, index) => 
-                    <ProposalItem key={index} id={candidate.id} name={candidate.name} voteCount={candidate.voteCount} reload={getProposals}/>
+                {proposals.map((proposal, index) => 
+                    <ProposalItem key={index} proposal={proposal} reload={getProposals}/>
                 )}
               </tbody>
             </table>

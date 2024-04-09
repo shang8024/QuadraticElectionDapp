@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
+import useEth from "../../contexts/EthContext/useEth";
 import {
   Box,
   Button,
@@ -14,7 +15,10 @@ import {
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
+
 const CreateProposal = () => {
+  const { state: { contract, accounts } } = useEth();
   const [title, setTitle] = useState("");
   const [endDate, setEndDate] = useState(null);
   const [startDate, setStartDate] = useState(null);
@@ -26,6 +30,8 @@ const CreateProposal = () => {
     e.preventDefault();
     setLoading(true);
     setSuccessSubmit(false);
+    console.log(dayjs(startDate).unix(), dayjs(endDate).unix());
+    contract.methods.createProposal(title, description).send({ from: accounts[0] })
     
   };
 

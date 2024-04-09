@@ -41,10 +41,12 @@
  * https://trufflesuite.com/docs/truffle/getting-started/using-the-truffle-dashboard/
  */
 
-// require('dotenv').config();
-// const { MNEMONIC, PROJECT_ID } = process.env;
+// const HDWalletProvider = require("@truffle/hdwallet-provider");
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+require('dotenv').config();
+const {PRIVATE_KEY} = process.env;
+
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 module.exports = {
   /**
@@ -97,6 +99,16 @@ module.exports = {
     //   network_id: 2111,   // This network is yours, in the cloud.
     //   production: true    // Treats this network as if it was a public net. (default: false)
     // }
+    sepolia:{
+      provider: () => {
+        return new HDWalletProvider(
+          PRIVATE_KEY, "https://sepolia.infura.io/v3/4eda45fd36c44830b01bf165cd4c00e5");
+      },
+        network_id: "11155111",
+        confirmations: 1,
+        timeoutBlocks: 200,
+        skipDryRun: true
+    },
   },
 
   // Set default mocha options here, use special reporters, etc.
