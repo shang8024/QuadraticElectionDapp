@@ -34,8 +34,6 @@ contract Election is AccessControl {
         uint256 abstains;
         string description;
         ProposalStatus status;
-        uint32 startDate;
-        uint32 endDate;
         address proposer;
         address executor;
     }
@@ -84,31 +82,32 @@ contract Election is AccessControl {
         voters[_voter].tokens = MIN_VOTER_TOKENS; 
     }
 
-    function createProposal(string memory _title, string memory _description, uint32 _startDate, uint32 _endDate) 
+    function createProposal(string memory _title, string memory _description) 
         public
     {
         //require a valid duration
-        require(_endDate > _startDate, "Duration must be valid");
         require(bytes(_title).length > 0, "Title must be valid");
         require(bytes(_description).length > 0, "Description must be valid");
         //require a valid voter or a admin
-        // check if the msg sender is admin
-        require(hasRole(ADMIN_ROLE, msg.sender) || _isStakeholder(msg.sender), "Caller is not an admin or stakeholder");
+        // // check if the msg sender is admin
+        if (hasRole(ADMIN_ROLE, msg.sender) || msg.sender == _token || msg.sender == address(this)) {
+            // console.log("Admin is creating a proposal");
+        } else {
+            // console.log("Voter is creating a proposal");
+            require(_isStakeholder(msg.sender), "Voter must be a stakeholder");
+        }
+        proposalsCount++;
         proposals[proposalsCount] = Proposal({
             id: proposalsCount,
-            proposer: msg.sender,
             title: _title,
-            description: _description,
-            startDate: _startDate,
-            endDate: _endDate,
-            status: ProposalStatus.IN_PROGRESS,
             upvotes: 0,
             downvotes: 0,
             abstains: 0,
+            description: _description,
+            status: ProposalStatus.IN_PROGRESS,
+            proposer: msg.sender,
             executor: address(0)
         });
-        proposalsCount++;
-
     }
 
     function getProposals() public view returns (Proposal[] memory) {
