@@ -24,7 +24,7 @@ In `/truffle` folder, add `.env` file, add `PUBLIC_KEY=<Your_MetaMask_PUBLICKEY>
 2. On a seperate terminal window, run
    `cd truffle` then `truffle migrate --network development --reset`
 
-3. `cd ../client` then `npm run start`
+3. In root folder, `npm run start`
 
 
 ## Notes 
