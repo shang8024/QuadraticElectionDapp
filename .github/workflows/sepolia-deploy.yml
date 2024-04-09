@@ -21,5 +21,7 @@ jobs:
           npm install
           cd truffle
           npm install
+          npm install -g truffle
+          npm install @openzeppelin/contracts
           truffle migrate --network sepolia --reset
       
