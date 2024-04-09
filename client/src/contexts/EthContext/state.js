@@ -9,7 +9,8 @@ const initialState = {
   accounts: null,
   networkID: null,
   contract: null,
-  users: {}
+  users: {},
+  nft_contract_address : null,
 };
 
 const reducer = (state, action) => {

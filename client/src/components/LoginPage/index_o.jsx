@@ -13,7 +13,7 @@ function LoginPage() {
     event.preventDefault();
     
     // Replace with your actual backend endpoint
-    const loginEndpoint = 'http://localhost:5000/login';
+    const loginEndpoint = `${process.env.BASE_URL}/login`;
     
     try {
       const response = await fetch(loginEndpoint, {

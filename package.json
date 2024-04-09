@@ -4,15 +4,26 @@
   "description": "1. install node\r 2. install Truffle and Ganache globally\r `npm install -g truffle ganache-cli`\r 3. install Metamask",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd client && npm run build && cd .. && set NODE_ENV=production&& node server.js",
+    "start-development": "cd client && npm start && cd .. && set NODE_ENV=development&& node server.js",
+    "server": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@date-io/dayjs": "^3.0.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/material": "^5.15.15",
+    "@mui/x-date-pickers": "^7.1.1",
     "@openzeppelin/contracts": "^5.0.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.10",
+    "dotenv": "^16.4.5",
+    "ethers": "^5.6.7",
     "express": "^4.19.1",
     "express-session": "^1.18.0",
     "jsonwebtoken": "^9.0.2",

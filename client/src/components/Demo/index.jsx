@@ -1,7 +1,7 @@
 import { useState,useEffect } from "react";
 import useEth from "../../contexts/EthContext/useEth";
 import Title from "./Title";
-import CandidateList from "./CandidateList";
+import ProposalList from "./ProposalList";
 import NoticeNoArtifact from "./NoticeNoArtifact";
 import NoticeWrongNetwork from "./NoticeWrongNetwork";
 
@@ -32,10 +32,10 @@ function Demo() {
       <p>Account address: {state.accounts ? state.accounts[0] : ''}</p>
       <p>Remaining Tokens: {tokens}</p>
       <p>Votes Casted: {votesCasted}</p>
-      <p><btn onClick={resetToken}>Refresh</btn></p>
+      <p><button onClick={resetToken}>Refresh</button></p>
       <hr />
       <div className="contract-container">
-        <CandidateList />
+        <ProposalList />
       </div>
     </>;
 
