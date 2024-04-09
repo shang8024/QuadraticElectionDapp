@@ -9,7 +9,9 @@ function AdminPage() {
   const [allUsers, setAllUsers] = useState([]);
   const [whitelistedUsers, setWhitelistedUsers] = useState([]);
   const [anonymousVoters, setAnonymousVoters] = useState([]);
-  const contractAddress = "0x746597857aD381eF28258907378d0c2160203A86";
+
+  // Deploying 'QuadraDAO' contract address after running truffle migrate --reset
+  const contractAddress = "0x8274D55E50b30D5eDb5a0Ac50E1e2A4CaBd8FBF7";
 
   // Fetch users from localStorage on component mount
   useEffect(() => {
@@ -35,8 +37,8 @@ function AdminPage() {
   //   }
   // };
 
-
-  const handleGenerateNFTs = async (userAddress = "0x8e0665716b46ae4317B6642fc99dDA995706d23A") => {
+  //add user account [ accounts[1]]
+  const handleGenerateNFTs = async (userAddress = "0x3168aFE2f94c5C23dA40a5906B202B766ddb9B02") => {
     const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
     //await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
@@ -77,7 +79,8 @@ function AdminPage() {
                 <Button onClick={() => handleWhitelistUser(user)} sx={{ backgroundColor: '#0F52BA', color: 'white', '&:hover': { backgroundColor: 'darkgray' }, }}>Whitelist User</Button>
               )}
               {anonymousVoters.includes(user) && (
-                <Button onClick={() => handleGenerateNFTs("0x8e0665716b46ae4317B6642fc99dDA995706d23A")} sx={{ backgroundColor: '#228B22', color: 'white', '&:hover': { backgroundColor: 'darkgray' }, }}>Generate NFT</Button>
+                //add user account [ accounts[1]]
+                <Button onClick={() => handleGenerateNFTs("0x3168aFE2f94c5C23dA40a5906B202B766ddb9B02")} sx={{ backgroundColor: '#228B22', color: 'white', '&:hover': { backgroundColor: 'darkgray' }, }}>Generate NFT</Button>
               )}
             </ListItem>
           ))}
