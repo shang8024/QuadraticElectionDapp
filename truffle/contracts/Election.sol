@@ -63,7 +63,7 @@ contract Election is AccessControl {
 
     event NewProposal(uint256 id, string title);
 
-    constructor(address token, address admin) {
+    constructor(address admin,address token) {
         _token = token;
         _grantRole(ADMIN_ROLE, admin);
         console.log("Creating a new proposal");

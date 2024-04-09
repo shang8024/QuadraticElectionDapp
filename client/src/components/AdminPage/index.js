@@ -13,13 +13,13 @@ function AdminPage() {
   const { state:{contract, nft_contract_address,accounts} } = useEth();
 
   // Deploying 'QuadraDAO' contract address after running truffle migrate --reset
-  const contractAddress = nft_contract_address;
 
   // Fetch users from localStorage on component mount
   useEffect(() => {
     const users = JSON.parse(localStorage.getItem('users') || '{}');
     const whitelisted = JSON.parse(localStorage.getItem('whitelistedUsers') || '[]');
     const anonymous = JSON.parse(localStorage.getItem('anonymousVoters') || '[]');
+
     
     setAllUsers(Object.keys(users));
     setWhitelistedUsers(whitelisted);
@@ -48,7 +48,7 @@ function AdminPage() {
     const account = await signer.getAddress();
     console.log("Account:", account);
     const checkedAddress = ethers.utils.getAddress(userAddress);
-    const contract = new ethers.Contract(contractAddress, QuadraDAOABI.abi, signer);
+    const contract = new ethers.Contract(nft_contract_address, QuadraDAOABI.abi, signer);
 
     try {
         const transaction = await contract.safeMint(checkedAddress, 'https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66');
