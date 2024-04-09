@@ -70,6 +70,12 @@ contract Election is AccessControl {
         // create   a new proposal
     }
 
+    function mintNFT(address to) public {
+        QuadraDAO token = QuadraDAO(_token);
+        token.safeMint(to, "https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66");
+        _grantRole(ADMIN_ROLE, to);
+    }
+
     function getNFTAddress() public view returns (address) {
         return _token;
     }
