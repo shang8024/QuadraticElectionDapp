@@ -3,15 +3,17 @@ import { Container, Typography, Box, Button, List, ListItem, ListItemText } from
 import { ethers } from 'ethers';
 import QuadraDAOABI from '../../contracts/QuadraDAO.json';
 import "../../styles.css";
+import useEth from "../../contexts/EthContext/useEth";
 
 function AdminPage() {
   // States to store different categories of users
   const [allUsers, setAllUsers] = useState([]);
   const [whitelistedUsers, setWhitelistedUsers] = useState([]);
   const [anonymousVoters, setAnonymousVoters] = useState([]);
+  const { state:{contract, nft_contract_address,accounts} } = useEth();
 
   // Deploying 'QuadraDAO' contract address after running truffle migrate --reset
-  const contractAddress = "0x8274D55E50b30D5eDb5a0Ac50E1e2A4CaBd8FBF7";
+  const contractAddress = nft_contract_address;
 
   // Fetch users from localStorage on component mount
   useEffect(() => {
@@ -38,7 +40,7 @@ function AdminPage() {
   // };
 
   //add user account [ accounts[1]]
-  const handleGenerateNFTs = async (userAddress = "0x3168aFE2f94c5C23dA40a5906B202B766ddb9B02") => {
+  const handleGenerateNFTs = async (userAddress = accounts[0]) => {
     const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
     //await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();

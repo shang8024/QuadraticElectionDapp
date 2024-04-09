@@ -20,7 +20,9 @@ function EthProvider({ children }) {
 
 
           contract = new web3.eth.Contract(abi, address);
-          nft_contract_address = contract.methods.getNFTAddress().call();
+          await contract.methods.getNFTAddress().call().then((result) => {
+            nft_contract_address = result;
+          });
         } catch (err) {
           console.error(err);
         }
@@ -34,7 +36,7 @@ function EthProvider({ children }) {
   useEffect(() => {
     const tryInit = async () => {
       try {
-        const elction_artifact = require("../../contracts/Election.json");
+        const artifact = require("../../contracts/Election.json");
         init(artifact);
       } catch (err) {
         console.error(err);
