@@ -1,14 +1,7 @@
 name: DAO Deploy
 run-name: ${{ github.actor }} is deplying to sepolia
 # run workflow on every merge to master
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+on: [push]
 jobs:
   sepolia-deploy:
     runs-on: ubuntu-latest
