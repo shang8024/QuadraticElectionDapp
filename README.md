@@ -1,3 +1,8 @@
+# Quadratic DAO 
+
+The app is deployed on: https://quadradao-app.azurewebsites.net
+
+
 ## Installation
 
 1. install node
