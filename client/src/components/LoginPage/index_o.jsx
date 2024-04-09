@@ -1,40 +1,39 @@
-import React, { useState } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { useUser } from '../../contexts/UserContext/UserContext'; // Adjust the import path as needed
+import React, { useState } from "react";
+import { Link as RouterLink } from 'react-router-dom';
 import {
-  Container
-  , Box
-  , Typography
-  , TextField
-  , FormControlLabel
-  , Checkbox
-  , Button
-  , Grid
-  , Link
+  Container, Box, Typography, TextField, FormControlLabel,
+  Checkbox, Button, Grid, Link
 } from "@mui/material";
 
 function LoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const { users } = useUser();
-  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Check if the credentials are for an admin
-    if (username === 'admin' && password === 'admin') {
-      console.log("Admin login successful");
-      navigate('/admin'); // Navigate to admin page for admin
-    } else {
-      // For regular users, verify against the stored users context
-      const userPassword = users[username];
-      if (userPassword && userPassword === password) {
-        console.log("Login successful");
-        localStorage.setItem('currentUser', username); 
-        navigate('/user'); // Navigate to user page for regular users
-      } else {
-        alert('Invalid username or password');
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    
+    // Replace with your actual backend endpoint
+    const loginEndpoint = 'http://localhost:5000/login';
+    
+    try {
+      const response = await fetch(loginEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Login failed');
       }
+      
+      const data = await response.json();
+      console.log("Login successful:", data);
+      // Handle post-login logic here, e.g., redirect, save the auth token, etc.
+    } catch (error) {
+      console.error("Login error:", error);
+      // Handle error state here, e.g., show an error message to the user
     }
   };
 
@@ -49,7 +48,7 @@ function LoginPage() {
         }}
       >
         <Typography component="h1" variant="h2">
-           User Login
+          User Login
         </Typography>
         <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
           <TextField
@@ -62,7 +61,7 @@ function LoginPage() {
             autoComplete="username"
             autoFocus
             value={username}
-            onChange={e => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <TextField
             margin="normal"
@@ -74,11 +73,11 @@ function LoginPage() {
             id="password"
             autoComplete="current-password"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
-           <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
           />
           <Button
             type="submit"
