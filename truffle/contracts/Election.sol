@@ -70,13 +70,14 @@ contract Election is AccessControl {
         // create   a new proposal
     }
 
-    function mintNFT(address _voter) public returns (uint256) {
-        // if the voter has a token in the Token contract
-        // cast the function BalanceOf to the token contract QUadraDAO with address _token
+    function mintNFT(address to) public {
         QuadraDAO token = QuadraDAO(_token);
-        token.safeMint(_voter, 'https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66');
-        _grantRole(ADMIN_ROLE, _voter);
-        return token.balanceOf(_voter);
+        token.safeMint(to, "https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66");
+        _grantRole(ADMIN_ROLE, to);
+    }
+
+    function getNFTAddress() public view returns (address) {
+        return _token;
     }
 
     function _isStakeholder(address _voter) public view returns (bool) {

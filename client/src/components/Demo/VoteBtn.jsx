@@ -13,9 +13,9 @@ function VoteBtn({ candidateId }) {
   // };
 
   const vote = async e => {
-    if (e.target.tagName === "INPUT") {
-      return;
-    }
+    // if (e.target.tagName === "INPUT") {
+    //   return;
+    // }
     // if (inputValue === "") {
     //   alert("Please enter a value to vote.");
     //   return;
@@ -25,9 +25,7 @@ function VoteBtn({ candidateId }) {
   };
 
   return (
-    <Button onClick={vote} variant="contained" color="primary">
-      Vote
-    </Button>
+    <Button onClick={vote} variant="contained" color="primary">Vote</Button>
   );
 }
 
