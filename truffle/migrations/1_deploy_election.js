@@ -3,6 +3,7 @@ const QuadraDAO = artifacts.require("QuadraDAO");
 
 module.exports = async function (deployer) {
   const accounts = await web3.eth.getAccounts();
-  await deployer.deploy(QuadraDAO, accounts[0]);
-  await deployer.deploy(Election, accounts[0], QuadraDAO.address);
+  console.log(accounts);
+  await deployer.deploy(QuadraDAO, "0x1501C15F2349B277e6848D2dC2DB000a190608a0");
+  await deployer.deploy(Election, "0x1501C15F2349B277e6848D2dC2DB000a190608a0", QuadraDAO.address);
 };

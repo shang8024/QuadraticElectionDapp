@@ -1,7 +1,7 @@
 import { useState,useEffect } from "react";
 import useEth from "../../contexts/EthContext/useEth";
 import Title from "./Title";
-import CandidateList from "./CandidateList";
+import ProposalList from "./ProposalList";
 import NoticeNoArtifact from "./NoticeNoArtifact";
 import NoticeWrongNetwork from "./NoticeWrongNetwork";
 
@@ -35,7 +35,7 @@ function Demo() {
       <p><btn onClick={resetToken}>Refresh</btn></p>
       <hr />
       <div className="contract-container">
-        <CandidateList />
+        <ProposalList />
       </div>
     </>;
 

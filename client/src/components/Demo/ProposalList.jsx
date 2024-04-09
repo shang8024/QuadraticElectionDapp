@@ -1,34 +1,39 @@
 import { useEffect, useState } from "react";
 import useEth from "../../contexts/EthContext/useEth";
-import VoteBtn from "./VoteBtn";
 
-const CandidateItem = ({ id, name, voteCount,reload}) => {
-    console.log(id, name, voteCount);
+const proposalStatus = {
+  IN_PROGRESS: 0,
+  APPROVED: 1,
+  REJECTED: 2,
+  ENDED: 3,
+};
+
+const ProposalItem = ({ id, title, voteCount,reload}) => {
     return (
         <tr>
-            <th scope="row">{id}</th>
-            <td>{name}</td>
+            <th>{id}</th>
+            <td>{title}</td>
             <td>{voteCount}</td>
-            <td><VoteBtn candidateId={id} reload={reload}/></td>
         </tr>
     );
 };
 
-function CandidateList() {
+function ProposalList() {
   const { state: { contract, accounts } } = useEth();
 
-  const [candidates, setCandidates] = useState([]);
+  const [proposals, setProposals] = useState([]);
 
-  // const getCandidates = async () => {
-  //   const list = await contract.methods.getCandidates().call();
-  //   setCandidates(list);
-  // };
+  const getProposals = async () => {
+    const list = await contract.methods.getProposals().call();
+    console.log(list);
+    setProposals(list);
+  };
 
-  //   useEffect(() => {
-  //       if (contract) {
-  //           getCandidates();
-  //       }
-  //   }, [contract]);
+    useEffect(() => {
+        if (contract) {
+            getProposals();
+        }
+    }, [contract]);
 
   return (
     <div className="container">
@@ -50,9 +55,9 @@ function CandidateList() {
                   <th scope="col">Vote</th>
                 </tr>
               </thead>
-              <tbody id="candidatesResults">
-                {candidates.map((candidate, index) => 
-                    <CandidateItem key={index} id={candidate.id} name={candidate.name} voteCount={candidate.voteCount} reload={getCandidates}/>
+              <tbody id="proposalsResults">
+                {proposals.map((candidate, index) => 
+                    <ProposalItem key={index} id={candidate.id} name={candidate.name} voteCount={candidate.voteCount} reload={getProposals}/>
                 )}
               </tbody>
             </table>
@@ -66,4 +71,4 @@ function CandidateList() {
   );
 }
 
-export default CandidateList;
+export default ProposalList;

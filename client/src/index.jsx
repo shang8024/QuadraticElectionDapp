@@ -5,7 +5,6 @@ import SignupPage from "./components/SignupPage";
 import UserPage from "./components/UserPage";
 import AdminPage from "./components/AdminPage";
 import App from "./App";
-import Demo from "./components/Demo";
 import { EthProvider } from './contexts/EthContext/'; 
 
 import "./styles.css";
@@ -16,6 +15,7 @@ import {
   Routes,
   Route
  } from "react-router-dom";
+import CreateProposal from "./components/Demo/CreateProposal";
  
 const defaultTheme = createTheme();
 
@@ -33,6 +33,7 @@ root.render(
               <Route path="/user" element={<UserPage />} />
               <Route path="/vote" element={<App/>}/>
               <Route path="/admin" element={<AdminPage />}/>
+              <Route path="/createProposal" element={<CreateProposal />}/>
             </Routes>
           </Router>
         </UserProvider>

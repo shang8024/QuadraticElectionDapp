@@ -2,11 +2,12 @@
 pragma solidity >=0.4.22 <0.9.0;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./QuadraDAO.sol";
+import "hardhat/console.sol";
 
 contract Election is AccessControl {
     // bytes32 public immutable STAKEHOLDER_ROLE = keccak256("STAKEHOLDER");
     bytes32 public immutable ADMIN_ROLE = keccak256("ADMIN");
-    uint32 immutable MIN_VOTE_DURATION = 10 minutes;
+    uint32 immutable MIN_VOTE_DURATION = 1000;
     uint32 immutable MIN_APPROVAL_VOTES = 1;
     uint32 immutable MIN_APPROVAL_RATES = 25;
     uint256 immutable MIN_VOTER_TOKENS = 10;
@@ -33,7 +34,8 @@ contract Election is AccessControl {
         uint256 abstains;
         string description;
         ProposalStatus status;
-        uint256 duration;
+        uint32 startDate;
+        uint32 endDate;
         address proposer;
         address executor;
     }
@@ -61,45 +63,52 @@ contract Election is AccessControl {
     //Store Proposal Count
     uint256 public proposalsCount;
 
+    event NewProposal(uint256 id, string title);
+
     constructor(address token, address admin) {
         _token = token;
         _grantRole(ADMIN_ROLE, admin);
+        console.log("Creating a new proposal");
+        // create   a new proposal
     }
 
-    function _isStakeholder(address _voter) public view {
+    function _isStakeholder(address _voter) public view returns (bool) {
         // if the voter has a token in the Token contract
         // cast the function BalanceOf to the token contract QUadraDAO with address _token
         QuadraDAO token = QuadraDAO(_token);
-        require(token.balanceOf(_voter) > 0, "Voter does not have Governance NFT");
+        if(token.balanceOf(_voter) > 0) return true;
+        return false;
     }
 
     function resetVotingPower(address _voter) public onlyRole(ADMIN_ROLE) {
         voters[_voter].tokens = MIN_VOTER_TOKENS; 
     }
 
-    function createProposal(string memory _title, string memory _description, uint256 _duration)
+    function createProposal(string memory _title, string memory _description, uint32 _startDate, uint32 _endDate) 
         public
-        returns (Proposal memory)
     {
-        //require a valid title
-        require(bytes(_title).length > 0, "Title must be valid");
-        //require a valid description
-        require(bytes(_description).length > 0, "Description must be valid");
         //require a valid duration
-        require(_duration >= MIN_VOTE_DURATION, "Duration must be valid");
-        //require a valid voter
-        // _isStakeholder(msg.sender);
-
+        require(_endDate > _startDate, "Duration must be valid");
+        require(bytes(_title).length > 0, "Title must be valid");
+        require(bytes(_description).length > 0, "Description must be valid");
+        //require a valid voter or a admin
+        // check if the msg sender is admin
+        require(hasRole(ADMIN_ROLE, msg.sender) || _isStakeholder(msg.sender), "Caller is not an admin or stakeholder");
+        proposals[proposalsCount] = Proposal({
+            id: proposalsCount,
+            proposer: msg.sender,
+            title: _title,
+            description: _description,
+            startDate: _startDate,
+            endDate: _endDate,
+            status: ProposalStatus.IN_PROGRESS,
+            upvotes: 0,
+            downvotes: 0,
+            abstains: 0,
+            executor: address(0)
+        });
         proposalsCount++;
-        Proposal storage proposal = proposals[proposalsCount];
-        
-        proposal.id = proposalsCount;
-        proposal.proposer = msg.sender;
-        proposal.title = _title;
-        proposal.description = _description;
-        proposal.duration = _duration + block.timestamp;
-        proposal.status = ProposalStatus.IN_PROGRESS;
-        return proposal;
+
     }
 
     function getProposals() public view returns (Proposal[] memory) {
