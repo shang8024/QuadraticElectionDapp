@@ -1,16 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Typography, Box, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation
-import { Link as RouterLink } from 'react-router-dom';
-import App from "../../App";
 
 function UserPage() {
   const navigate = useNavigate();
+  const username = localStorage.getItem('currentUser');
+  // State variables to track if the user has requested whitelisting or NFTs
+  const [requestedWhitelisting, setRequestedWhitelisting] = useState(false);
+  const [requestedNFT, setRequestedNFT] = useState(false);
 
-  // Example navigation functions (adjust these with actual logic)
+  const updateAdminLists = (listName) => {
+    const list = JSON.parse(localStorage.getItem(listName) || '[]');
+    if (!list.includes(username)) {
+      list.push(username);
+      localStorage.setItem(listName, JSON.stringify(list));
+    }
+  };
+
+  const getWhitelisted = () => {
+    updateAdminLists('whitelistedUsers');
+    setRequestedWhitelisting(true); // Update state to reflect request made
+    console.log('Requesting to get whitelisted...');
+  };
+
+  const getNFTsForVoting = () => {
+    updateAdminLists('anonymousVoters');
+    setRequestedNFT(true); // Update state to reflect request made
+    console.log('Requesting NFTs for anonymous voting...');
+  };
+
   const goToVotingPage = () => navigate('/vote');
-  const getWhitelisted = () => console.log('Getting whitelisted...');
-  const getNFTsForVoting = () => console.log('Getting NFTs for anonymous voting...');
 
   return (
     <Container component="main" maxWidth="xs">
@@ -24,11 +43,23 @@ function UserPage() {
         }}
       >
         <Typography component="h1" variant="h5">
-          Welcome!
+          Welcome, {username}!
         </Typography>
         <Button variant="contained" onClick={goToVotingPage}>Go to voting page</Button>
-        <Button variant="contained" onClick={getWhitelisted}>Get whitelisted</Button>
-        <Button variant="contained" onClick={getNFTsForVoting}>Get NFTs for anonymous voting</Button>
+        <Button 
+          variant="contained" 
+          onClick={getWhitelisted}
+          disabled={requestedWhitelisting} // Disable button after request
+        >
+          {requestedWhitelisting ? 'Requested for whitelisting' : 'Get whitelisted'}
+        </Button>
+        <Button 
+          variant="contained" 
+          onClick={getNFTsForVoting}
+          disabled={requestedNFT} // Disable button after request
+        >
+          {requestedNFT ? 'Requested for NFT' : 'Get NFTs for anonymous voting'}
+        </Button>
       </Box>
     </Container>
   );
