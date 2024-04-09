@@ -4,7 +4,9 @@
   "description": "1. install node\r 2. install Truffle and Ganache globally\r `npm install -g truffle ganache-cli`\r 3. install Metamask",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "server": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
