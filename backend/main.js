@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const path = require('path');
 
 app.use(cors()); // Enable CORS for all requests
 app.use(express.json()); // Middleware to parse JSON bodies
@@ -55,6 +56,10 @@ app.post('/login', async (req, res) => {
   // Generate and return a JWT token
   const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: '1h' });
   res.status(200).json({ token });
+});
+app.use(express.static('../client/build'));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
 });
 
 // Start the server
