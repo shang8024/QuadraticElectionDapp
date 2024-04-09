@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import useEth from "../../contexts/EthContext/useEth";
 import { Button } from "@mui/material";
+import VoteBtn from "./VoteBtn";
 
 const proposalStatus = {
   IN_PROGRESS: 0,
@@ -18,6 +19,7 @@ const ProposalItem = ({ proposal}) => {
             <td>{title}</td>
             <td>{totalVotes}</td>
             <td>{status == proposalStatus.IN_PROGRESS ? "In Progress" : status == proposalStatus.APPROVED ? "Approved" : status == proposalStatus.REJECTED ? "Rejected" : "Ended"}</td>
+            <td><VoteBtn candidateId={id} /></td>
         </tr>
     );
 };
@@ -69,6 +71,7 @@ function ProposalList() {
                   <th scope="col">Title</th>
                   <th scope="col">Voted</th>
                   <th scope="col">Status</th>
+                  <th scope="col">Vote</th>
                 </tr>
               </thead>
               <tbody id="proposalsResults">
