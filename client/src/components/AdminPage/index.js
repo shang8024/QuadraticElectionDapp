@@ -10,12 +10,33 @@ function AdminPage() {
   const [allUsers, setAllUsers] = useState([]);
   const [whitelistedUsers, setWhitelistedUsers] = useState([]);
   const [anonymousVoters, setAnonymousVoters] = useState([]);
+  const [currentAccount, setCurrentAccount] = useState('');
   const { state:{contract, nft_contract_address,accounts} } = useEth();
 
   // Deploying 'QuadraDAO' contract address after running truffle migrate --reset
 
   // Fetch users from localStorage on component mount
   useEffect(() => {
+
+    const handleAccountsChanged = (accounts) => {
+      if (accounts.length === 0) {
+        console.log("Please connect to MetaMask.");
+      } else {
+        setCurrentAccount(accounts[0]);
+      }
+    };
+
+    // Setup to listen for account changes if the Ethereum provider is available
+    if (window.ethereum) {
+      window.ethereum.request({ method: 'eth_accounts' })
+        .then(handleAccountsChanged)
+        .catch((err) => {
+          console.error(err);
+        });
+
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+    }
+
     const users = JSON.parse(localStorage.getItem('users') || '{}');
     const whitelisted = JSON.parse(localStorage.getItem('whitelistedUsers') || '[]');
     const anonymous = JSON.parse(localStorage.getItem('anonymousVoters') || '[]');
@@ -24,6 +45,12 @@ function AdminPage() {
     setAllUsers(Object.keys(users));
     setWhitelistedUsers(whitelisted);
     setAnonymousVoters(anonymous);
+
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      }
+    };
   }, []);
 
   // Handler for generating NFT
@@ -82,11 +109,20 @@ function AdminPage() {
               )}
               {anonymousVoters.includes(user) && (
                 //add user account [ accounts[1]]
-                <Button onClick={() => handleGenerateNFTs("0x3168aFE2f94c5C23dA40a5906B202B766ddb9B02")} sx={{ backgroundColor: '#228B22', color: 'white', '&:hover': { backgroundColor: 'darkgray' }, }}>Generate NFT</Button>
+              <Button 
+                onClick={() => handleGenerateNFTs(accounts[index] || currentAccount)} // Pass dynamic address
+                sx={{ backgroundColor: '#228B22', color: 'white', '&:hover': { backgroundColor: 'darkgray' } }}>
+                Generate NFT
+              </Button>
               )}
             </ListItem>
           ))}
         </List>
+      </Box>
+      <Box sx={{ p: 2, border: '1px dashed grey' }}>
+        <Typography variant="body1">
+          Admin Metamask Account: {currentAccount || 'Not Connected'}
+        </Typography>
       </Box>
     </Container>
   );
