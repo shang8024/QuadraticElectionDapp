@@ -19,7 +19,7 @@ function LoginPage() {
   const { users } = useUser();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Check if the credentials are for an admin
     if (username === 'admin' && password === 'admin') {
@@ -30,7 +30,7 @@ function LoginPage() {
       const userPassword = users[username];
       if (userPassword && userPassword === password) {
         console.log("Login successful");
-        localStorage.setItem('currentUser', username); 
+        //localStorage.setItem('currentUser', username); 
         navigate('/user'); // Navigate to user page for regular users
       } else {
         alert('Invalid username or password');

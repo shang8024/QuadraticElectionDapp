@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import QuadraDAOABI from '../../contracts/QuadraDAO.json';
 import "../../styles.css";
 import useEth from "../../contexts/EthContext/useEth";
+import io from 'socket.io-client';
 
 function AdminPage() {
   // States to store different categories of users
@@ -13,45 +14,47 @@ function AdminPage() {
   const [currentAccount, setCurrentAccount] = useState('');
   const { state:{contract, nft_contract_address,accounts} } = useEth();
 
+
+  const socket = io('http://localhost:4000');
   // Deploying 'QuadraDAO' contract address after running truffle migrate --reset
 
   // Fetch users from localStorage on component mount
   useEffect(() => {
-
     const handleAccountsChanged = (accounts) => {
-      if (accounts.length === 0) {
-        console.log("Please connect to MetaMask.");
-      } else {
-        setCurrentAccount(accounts[0]);
-      }
+        if (accounts.length === 0) {
+            console.log("Please connect to MetaMask.");
+        } else {
+            setCurrentAccount(accounts[0]);
+        }
     };
 
     // Setup to listen for account changes if the Ethereum provider is available
     if (window.ethereum) {
-      window.ethereum.request({ method: 'eth_accounts' })
-        .then(handleAccountsChanged)
-        .catch((err) => {
-          console.error(err);
-        });
+        window.ethereum.request({ method: 'eth_accounts' })
+            .then(handleAccountsChanged)
+            .catch((err) => {
+                console.error(err);
+            });
 
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
+        window.ethereum.on('accountsChanged', handleAccountsChanged);
     }
 
-    const users = JSON.parse(localStorage.getItem('users') || '{}');
-    const whitelisted = JSON.parse(localStorage.getItem('whitelistedUsers') || '[]');
-    const anonymous = JSON.parse(localStorage.getItem('anonymousVoters') || '[]');
+    // WebSocket listener for user data
+    socket.on('updateUsers', users => {
+      setAllUsers(Object.keys(users)); // Assuming users are sent as an object {username: userData}
+      // Assume userData format: { whitelisted: boolean, voter: boolean }
+      setWhitelistedUsers(Object.keys(users).filter(username => users[username].whitelisted));
+      setAnonymousVoters(Object.keys(users).filter(username => users[username].voter));
+    });
 
-    
-    setAllUsers(Object.keys(users));
-    setWhitelistedUsers(whitelisted);
-    setAnonymousVoters(anonymous);
-
+    // Cleanup function
     return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-      }
+        if (window.ethereum) {
+            window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        }
+        socket.off('updateUsers');
     };
-  }, []);
+  }, [socket]);
 
   // Handler for generating NFT
 
@@ -81,6 +84,7 @@ function AdminPage() {
         const transaction = await contract.safeMint(checkedAddress, 'https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66');
         await transaction.wait();
         console.log(`NFT generated for ${userAddress}`);
+        socket.emit('nftGenerated', {userAddress, message: `NFT generated for ${userAddress}`});
     } catch (error) {
         console.error(`Error generating NFT for ${userAddress}:`, error);
     }
@@ -110,7 +114,7 @@ function AdminPage() {
               {anonymousVoters.includes(user) && (
                 //add user account [ accounts[1]]
               <Button 
-                onClick={() => handleGenerateNFTs(accounts[index] || currentAccount)} // Pass dynamic address
+                onClick={() => handleGenerateNFTs("0x4dA4e71E6c23bea73fee99324EB2Be009F9AE676")} // Pass dynamic address
                 sx={{ backgroundColor: '#228B22', color: 'white', '&:hover': { backgroundColor: 'darkgray' } }}>
                 Generate NFT
               </Button>
