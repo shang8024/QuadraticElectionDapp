@@ -1,4 +1,5 @@
 Local Setup Instructions
+Local setup instructions are expanded upon in the "How to use section", dependencies and their installations as well as testing setup are mentioend below.
 Dependencies & Installation
 The required libraries are truffle, ganache and openzepplin. The installation commands and links are included below. MetaMask wallet web extension is also required. 
 
