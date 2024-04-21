@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Container, Typography, Box, Button, List, ListItem, ListItemText } from '@mui/material';
 import { ethers } from 'ethers';
 import QuadraDAOABI from '../../contracts/QuadraDAO.json';
-import "../../styles.css";
 import useEth from "../../contexts/EthContext/useEth";
 import io from 'socket.io-client';
 
@@ -20,6 +19,11 @@ function AdminPage() {
 
   // Fetch users from localStorage on component mount
   useEffect(() => {
+		socket.emit('requestAllUsers'); // Request all users on component mount
+
+		socket.on('updateUsers', users => {
+			setAllUsers(Object.entries(users).map(([username, details]) => ({ username, ...details })));
+		});
     const handleAccountsChanged = (accounts) => {
         if (accounts.length === 0) {
             console.log("Please connect to MetaMask.");
@@ -40,12 +44,7 @@ function AdminPage() {
     }
 
     // WebSocket listener for user data
-    socket.on('updateUsers', users => {
-      setAllUsers(Object.keys(users)); // Assuming users are sent as an object {username: userData}
-      // Assume userData format: { whitelisted: boolean, voter: boolean }
-      setWhitelistedUsers(Object.keys(users).filter(username => users[username].whitelisted));
-      setAnonymousVoters(Object.keys(users).filter(username => users[username].voter));
-    });
+      // Listen for real-time updates on users
 
     // Cleanup function
     return () => {
@@ -70,25 +69,24 @@ function AdminPage() {
   // };
 
   //add user account [ accounts[1]]
-  const handleGenerateNFTs = async (userAddress = accounts[0]) => {
+  const handleGenerateNFTs = async (username) => {
+    console.log(`Generating NFT for ${username}`);
     const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
-    //await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
-    console.log(window.ethereum);
     const account = await signer.getAddress();
     console.log("Account:", account);
-    const checkedAddress = ethers.utils.getAddress(userAddress);
+    const checkedAddress = ethers.utils.getAddress(username);
     const contract = new ethers.Contract(nft_contract_address, QuadraDAOABI.abi, signer);
 
     try {
         const transaction = await contract.safeMint(checkedAddress, 'https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66');
         await transaction.wait();
-        console.log(`NFT generated for ${userAddress}`);
-        socket.emit('nftGenerated', {userAddress, message: `NFT generated for ${userAddress}`});
+        console.log(`NFT generated for ${username}`);
+        socket.emit('nftGenerated', { username, message: `NFT generated for ${username}` });
     } catch (error) {
-        console.error(`Error generating NFT for ${userAddress}:`, error);
+        console.error(`Error generating NFT for ${username}:`, error);
     }
-};
+  };
 
 
   // Handler for whitelisting user
@@ -99,37 +97,32 @@ function AdminPage() {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Typography component="h1" variant="h3" sx={{ mt: 2, mb: 2 }}>
-        Admin Dashboard
-      </Typography>
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="h4">All Users</Typography>
-        <List>
-          {allUsers.map((user) => (
-            <ListItem key={user}>
-              <ListItemText primary={user} sx={{ '.MuiTypography-root': { fontSize: '1.3rem' } }} />
-              {whitelistedUsers.includes(user) && (
-                <Button onClick={() => handleWhitelistUser(user)} sx={{ backgroundColor: '#0F52BA', color: 'white', '&:hover': { backgroundColor: 'darkgray' }, }}>Whitelist User</Button>
-              )}
-              {anonymousVoters.includes(user) && (
-                //add user account [ accounts[1]]
-              <Button 
-                onClick={() => handleGenerateNFTs("0x4dA4e71E6c23bea73fee99324EB2Be009F9AE676")} // Pass dynamic address
-                sx={{ backgroundColor: '#228B22', color: 'white', '&:hover': { backgroundColor: 'darkgray' } }}>
-                Generate NFT
-              </Button>
-              )}
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-      <Box sx={{ p: 2, border: '1px dashed grey' }}>
-        <Typography variant="body1">
-          Admin Metamask Account: {currentAccount || 'Not Connected'}
-        </Typography>
-      </Box>
+			<Typography component="h1" variant="h3">Admin Dashboard</Typography>
+			<List>
+				{allUsers.map((user) => (
+					<ListItem key={user.username}>
+						<ListItemText primary={user.username} />
+						{user.whitelisted && (
+							<Button
+								onClick={() => handleWhitelistUser(user.username)}
+								sx={{ backgroundColor: '#0F52BA', color: 'white', '&:hover': { backgroundColor: 'darkgray' } }}
+							>
+								Whitelist User
+							</Button>
+						)}
+						{user.voter && (
+							<Button
+								onClick={() => handleGenerateNFTs(user.username)}
+								sx={{ backgroundColor: '#228B22', color: 'white', '&:hover': { backgroundColor: 'darkgray' } }}
+							>
+								Generate NFT
+							</Button>
+						)}
+							</ListItem>
+				))}
+			</List>
     </Container>
-  );
+	);
 }
 
 export default AdminPage;

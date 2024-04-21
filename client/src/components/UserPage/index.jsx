@@ -9,6 +9,7 @@ import { useUser } from '../../contexts/UserContext/UserContext.js';
 const socket = io('http://localhost:4000');
 
 function UserPage() {
+    const [allUsers, setAllUsers] = useState([]);
     const navigate = useNavigate();
     const username = localStorage.getItem('currentUser'); // This can also be managed globally via Context API
     const [requestedWhitelisting, setRequestedWhitelisting] = useState(false);
@@ -16,60 +17,63 @@ function UserPage() {
     const [currentAccount, setCurrentAccount] = useState('');
 
     useEffect(() => {
-      socket.on('connect', () => {
+        socket.emit('requestAllUsers');  // Request all users on component mount
+
+        socket.on('updateUsers', (users) => {
+            setAllUsers(Object.entries(users).map(([username, details]) => ({ username, ...details })));
+        });
+    
+        socket.on('connect', () => {
             console.log('WebSocket connected');
         });
 
-      socket.on('disconnect', () => {
-          console.log('WebSocket disconnected');
-      });
+        socket.on('disconnect', () => {
+            console.log('WebSocket disconnected');
+        });
 
-      socket.on('connect_error', (error) => {
-          console.error('Connection error:', error);
-      });
+        socket.on('connect_error', (error) => {
+            console.error('Connection error:', error);
+        });
 
-      const handleAccountsChanged = (accounts) => {
-          if (accounts.length === 0) {
-              console.log("Please connect to MetaMask.");
-          } else {
-              setCurrentAccount(accounts[0]);
-          }
-      };
-
-      if (window.ethereum) {
-          window.ethereum.request({ method: 'eth_accounts' })
-              .then(handleAccountsChanged)
-              .catch((err) => {
-                  console.error(err);
-              });
-
-          window.ethereum.on('accountsChanged', handleAccountsChanged);
-      }
-
-      return () => {
-        socket.off('connect');
-        socket.off('disconnect');
-        socket.off('connect_error');
-        if (window.ethereum) {
-            window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-        }
+        const handleAccountsChanged = (accounts) => {
+            if (accounts.length === 0) {
+                console.log("Please connect to MetaMask.");
+            } else {
+                setCurrentAccount(accounts[0]);
+            }
         };
-    }, []);
+
+        if (window.ethereum) {
+            window.ethereum.request({ method: 'eth_accounts' })
+                .then(handleAccountsChanged)
+                .catch((err) => {
+                    console.error(err);
+                 });
+
+            window.ethereum.on('accountsChanged', handleAccountsChanged);
+        }
+
+        return () => {
+            socket.off('connect');
+            socket.off('disconnect');
+            socket.off('connect_error');
+            if (window.ethereum) {
+                window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+            }
+            };
+        }, []);
 
     const updateAdminLists = (listName) => {
         socket.emit('updateList', { listName, username });
     };
 
-    const getWhitelisted = () => {
-        updateAdminLists('whitelistedUsers');
-        setRequestedWhitelisting(true);
-        console.log('Requesting to get whitelisted...');
-    };
-
-    const getNFTsForVoting = () => {
-        updateAdminLists('anonymousVoters');
-        setRequestedNFT(true);
-        console.log('Requesting NFTs for anonymous voting...');
+    const requestFeature = (feature) => {
+        socket.emit('updateList', { username, listName: feature });
+        if (feature === 'whitelistedUsers') {
+            setRequestedWhitelisting(true);
+        } else if (feature === 'anonymousVoters') {
+            setRequestedNFT(true);
+        }
     };
 
     const goToVotingPage = () => navigate('/vote');
@@ -89,18 +93,10 @@ function UserPage() {
                     Welcome, {username}!
                 </Typography>
                 <Button variant="contained" onClick={goToVotingPage}>Go to voting page</Button>
-                <Button 
-                    variant="contained" 
-                    onClick={getWhitelisted}
-                    disabled={requestedWhitelisting}
-                >
+                <Button variant="contained" onClick={() => requestFeature('whitelistedUsers')} disabled={requestedWhitelisting}>
                     {requestedWhitelisting ? 'Requested for whitelisting' : 'Get whitelisted'}
                 </Button>
-                <Button 
-                    variant="contained" 
-                    onClick={getNFTsForVoting}
-                    disabled={requestedNFT}
-                >
+                <Button variant="contained" onClick={() => requestFeature('anonymousVoters')} disabled={requestedNFT}>
                     {requestedNFT ? 'Requested for NFT' : 'Get NFTs for anonymous voting'}
                 </Button>
                 <Box sx={{ p: 2, border: '1px dashed grey' }}>

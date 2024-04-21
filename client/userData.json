@@ -2,6 +2,40 @@
     "users": {
         "ii": "11",
         "ee": "11",
-        "pp": "11"
+        "pp": "11",
+        "oo": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": false
+        },
+        "hello": {
+            "anonymousVoters": true
+        },
+        "uu": {
+            "password": "22",
+            "whitelisted": false,
+            "voter": false
+        },
+        "ww": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": false
+        },
+        "rt": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": false
+        },
+        "ll": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": false
+        },
+        "yy": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": false,
+            "anonymousVoters": true
+        }
     }
 }

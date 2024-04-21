@@ -8,7 +8,16 @@ export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
     const [users, setUsers] = useState({});
-    const socket = io('http://localhost:4000');
+    const socket = io('http://localhost:4000', {
+        withCredentials: true,
+        transportOptions: {
+            polling: {
+                extraHeaders: {
+                    'my-custom-header': 'abcd'
+                }
+            }
+        }
+    });
 
     useEffect(() => {
         // Request current users from server
@@ -31,18 +40,23 @@ export const UserProvider = ({ children }) => {
 
     const loginUser = (username, password) => {
         return new Promise((resolve, reject) => {
-            socket.emit('requestAllUsers'); // Ensure the latest users data is loaded
-            socket.on('updateUsers', updatedUsers => {
-                const userExists = updatedUsers[username] && updatedUsers[username] === password;
+            socket.emit('requestAllUsers');  // Request the latest user data
+    
+            const handleUpdate = updatedUsers => {
+                const userExists = updatedUsers[username] && updatedUsers[username].password === password;
+                socket.off('updateUsers', handleUpdate);  // Remove listener to prevent memory leak
                 resolve(userExists);
-            });
+            };
+    
+            socket.on('updateUsers', handleUpdate);
         });
     };
+    
 
     // Provide any additional user-related functionality here
 
     return (
-        <UserContext.Provider value={{ users, addUser }}>
+        <UserContext.Provider value={{ users, addUser, loginUser }}>
             {children}
         </UserContext.Provider>
     );

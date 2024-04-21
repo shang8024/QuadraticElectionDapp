@@ -1,39 +1,35 @@
 import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { useUser } from '../../contexts/UserContext/UserContext'; // Adjust the import path as needed
+import { useUser } from '../../contexts/UserContext/UserContext';
 import {
-  Container
-  , Box
-  , Typography
-  , TextField
-  , FormControlLabel
-  , Checkbox
-  , Button
-  , Grid
-  , Link
+  Container, Box, Typography, TextField, FormControlLabel,
+  Checkbox, Button, Grid, Link
 } from "@mui/material";
 
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { users } = useUser();
+  const { loginUser } = useUser(); // Using loginUser function directly from context
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Check if the credentials are for an admin
+
     if (username === 'admin' && password === 'admin') {
       console.log("Admin login successful");
-      navigate('/admin'); // Navigate to admin page for admin
+      navigate('/admin');
     } else {
-      // For regular users, verify against the stored users context
-      const userPassword = users[username];
-      if (userPassword && userPassword === password) {
-        console.log("Login successful");
-        //localStorage.setItem('currentUser', username); 
-        navigate('/user'); // Navigate to user page for regular users
-      } else {
-        alert('Invalid username or password');
+      try {
+        const isValidUser = await loginUser(username, password);
+        if (isValidUser) {
+          console.log("Login successful");
+          localStorage.setItem('currentUser', username);
+          navigate('/user');
+        } else {
+          alert('Invalid username or password');
+        }
+      } catch (error) {
+        alert('Login error: ' + error.message);
       }
     }
   };
@@ -48,9 +44,7 @@ function LoginPage() {
           alignItems: 'center',
         }}
       >
-        <Typography component="h1" variant="h2">
-           User Login
-        </Typography>
+        <Typography component="h1" variant="h2">User Login</Typography>
         <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
           <TextField
             margin="normal"
@@ -76,9 +70,9 @@ function LoginPage() {
             value={password}
             onChange={e => setPassword(e.target.value)}
           />
-           <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
           />
           <Button
             type="submit"

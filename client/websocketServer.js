@@ -1,75 +1,116 @@
+const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const session = require('express-session');
+const Redis = require('redis');
+const connectRedis = require('connect-redis');
+
+const redisClient = Redis.createClient({
+    host: 'localhost',
+    port: 6379,
+    legacyMode: true
+});
+
+redisClient.connect().catch(err => console.error('Redis Client Connection Error', err));
+
+const RedisStore = connectRedis.default;
+const redisStore = new RedisStore({ client: redisClient });
+
+const sessionMiddleware = session({
+    store: redisStore,
+    secret: 'yourSecret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        secure: false, // should be true if HTTPS
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 // 24 hours
+    }
+});
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+    cors: {
+        origin: ["http://localhost:4000", "http://localhost:8080"],
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
+
+app.use(sessionMiddleware);
+io.use((socket, next) => {
+    sessionMiddleware(socket.request, {}, next);
+});
+
 const { JsonDB } = require('node-json-db');
 const { Config } = require('node-json-db/dist/lib/JsonDBConfig');
-
-// Configure the database to save after each operation and reload from the file
 const db = new JsonDB(new Config("userData", true, true, '/'));
 
-// Asynchronous function to ensure the users data path exists or to create it
 async function initializeUsers() {
     try {
-        // Try to get the data asynchronously
-        const users = await db.getData("/users");
-        console.log("Users data already initialized:", JSON.stringify(users, null, 2));
+        await db.getData("/users");
     } catch (error) {
-        console.log("Data path /users not found, initializing...");
-        // If the path doesn't exist, initialize it with an empty object
         await db.push("/users", {});
-        console.log("Users initialized.");
     }
 }
 
-// Initialize the database before starting the server
 initializeUsers().then(() => {
-    const server = http.createServer((req, res) => {
-        res.end('WebSocket server is running');
-    });
-    const io = socketIo(server, {
-        cors: {
-            origin: "*", // Adjust according to your security requirements
-            methods: ["GET", "POST"]
-        }
+    app.get('/', (req, res) => {
+        res.send('Server is running');
     });
 
-    // Socket.io connection event
     io.on('connection', (socket) => {
-        //console.log('New client connected');
-
-        // Handle addUser event
-        socket.on('addUser', async (userData) => {
+        const session = socket.request.session;
+        
+        socket.on('login', async (credentials) => {
+            const { username, password } = credentials;
             try {
-                // Push the new user's data into the database asynchronously
-                await db.push(`/users/${userData.username}`, userData.password);
-                // Retrieve updated users list and emit to all clients
-                const users = await db.getData("/users");
-                io.emit('updateUsers', users);
-                console.log("Added new user and emitted updated users list.");
+                const user = await db.getData(`/users/${username}`);
+                if (user && user.password === password) {
+                    session.username = username; // Save username to session
+                    session.save(); // Save the session
+                    socket.emit('loginSuccess', { message: 'Login successful', username });
+                } else {
+                    socket.emit('loginError', { message: 'Login failed' });
+                }
             } catch (error) {
-                console.error("Error adding new user:", error);
+                socket.emit('loginError', { message: 'User not found' });
             }
         });
-
-        // Handle request for all users
+        
+    
+        // Ensure all users are loaded on server start and when a new user logs in
         socket.on('requestAllUsers', async () => {
-            try {
-                const users = await db.getData("/users");
-                socket.emit('updateUsers', users);
-                //console.log("Emitted current users list.");
-            } catch (error) {
-                console.error("Error fetching users:", error);
-            }
+            const users = await db.getData("/users");
+            io.emit('updateUsers', users);
         });
 
-        socket.on('disconnect', () => {
-            console.log('Client disconnected');
+        socket.on('addUser', async (userData) => {
+            await db.push(`/users/${userData.username}`, { password: userData.password, whitelisted: false, voter: false });
+            const users = await db.getData("/users");
+            io.emit('updateUsers', users);
+        });
+    
+        socket.on('updateList', async (data) => {
+            // Update user properties based on feature requested
+            await db.push(`/users/${data.username}/${data.listName}`, true, false);
+            const users = await db.getData("/users");
+            io.emit('updateUsers', users); // Emit to all clients
+        });
+
+        socket.on('requestWhitelist', async (username) => {
+            await db.push(`/users/${username}/whitelisted`, true, false); // Do not overwrite the entire user object
+            const users = await db.getData("/users");
+            io.emit('updateUsers', users);
+        });
+
+        socket.on('requestNFT', async (username) => {
+            await db.push(`/users/${username}/voter`, true, false); // Do not overwrite the entire user object
+            const users = await db.getData("/users");
+            io.emit('updateUsers', users);
         });
     });
 
-    // Start the server
-    server.listen(4000, () => {
-        console.log('WebSocket server running on port 4000');
-    });
-}).catch(error => {
-    console.error('Failed to initialize the user database:', error);
+    server.listen(4000, () => console.log('WebSocket server running on port 4000'));
 });
