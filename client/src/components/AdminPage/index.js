@@ -5,6 +5,8 @@ import QuadraDAOABI from '../../contracts/QuadraDAO.json';
 import useEth from "../../contexts/EthContext/useEth";
 import io from 'socket.io-client';
 
+const socket = io('http://localhost:4000');
+
 function AdminPage() {
   // States to store different categories of users
   const [allUsers, setAllUsers] = useState([]);
@@ -14,7 +16,7 @@ function AdminPage() {
   const { state:{contract, nft_contract_address,accounts} } = useEth();
 
 
-  const socket = io('http://localhost:4000');
+  
   // Deploying 'QuadraDAO' contract address after running truffle migrate --reset
 
   // Fetch users from localStorage on component mount
@@ -53,7 +55,7 @@ function AdminPage() {
         }
         socket.off('updateUsers');
     };
-  }, [socket]);
+  }, []);
 
   // Handler for generating NFT
 

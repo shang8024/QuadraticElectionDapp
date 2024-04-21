@@ -73,6 +73,8 @@ function UserPage() {
             setRequestedWhitelisting(true);
         } else if (feature === 'anonymousVoters') {
             setRequestedNFT(true);
+            socket.emit('requestNFT', username ); 
+            console.log(typeof(username));
         }
     };
 

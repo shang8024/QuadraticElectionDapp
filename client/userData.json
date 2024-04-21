@@ -24,7 +24,8 @@
         "rt": {
             "password": "11",
             "whitelisted": false,
-            "voter": false
+            "voter": true,
+            "anonymousVoters": true
         },
         "ll": {
             "password": "11",
@@ -34,7 +35,7 @@
         "yy": {
             "password": "11",
             "whitelisted": false,
-            "voter": false,
+            "voter": true,
             "anonymousVoters": true
         }
     }
