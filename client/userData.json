@@ -31,7 +31,9 @@
         "ll": {
             "password": "11",
             "whitelisted": false,
-            "voter": false
+            "voter": true,
+            "account": "0xe51ffc4601152721aaaf33ab40e48220d0f3b404",
+            "anonymousVoters": true
         },
         "yy": {
             "password": "11",

@@ -103,6 +103,11 @@ initializeUsers().then(() => {
                 console.error('Error updating user account:', error);
             }
         });
+
+        socket.on('nftGenerated', (data) => {
+            // Emit to a specific user or to all users
+            io.emit('nftStatus', { username: data.username, message: "NFT successfully generated!" });
+        });        
         
 
         socket.on('addUser', async (userData) => {

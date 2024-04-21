@@ -36,6 +36,14 @@ function UserPage() {
             console.error('Connection error:', error);
         });
 
+        socket.on('nftStatus', (data) => {
+            if (data.username === localStorage.getItem('currentUser')) {
+                console.log(data.message);  // For debugging, can show in UI instead
+                setRequestedNFT(true); // Update state to show NFT status
+            }
+        });
+    
+
         const handleAccountsChanged = (accounts) => {
             if (accounts.length === 0) {
                 console.log("Please connect to MetaMask.");
@@ -60,6 +68,8 @@ function UserPage() {
             socket.off('connect');
             socket.off('disconnect');
             socket.off('connect_error');
+            socket.off('updateUsers');
+            socket.off('nftStatus');
             if (window.ethereum) {
                 window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
             }
@@ -104,6 +114,7 @@ function UserPage() {
                 <Button variant="contained" onClick={() => requestFeature('anonymousVoters')} disabled={requestedNFT}>
                     {requestedNFT ? 'Requested for NFT' : 'Get NFTs for anonymous voting'}
                 </Button>
+                {requestedNFT && <Typography variant="body2" color="green">Your NFT has been generated!</Typography>}
                 <Box sx={{ p: 2, border: '1px dashed grey' }}>
                     <Typography variant="body1">
                         User Metamask Account: {currentAccount || 'Not Connected'}
