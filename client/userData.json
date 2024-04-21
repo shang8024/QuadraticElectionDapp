@@ -25,7 +25,8 @@
             "password": "11",
             "whitelisted": false,
             "voter": true,
-            "anonymousVoters": true
+            "anonymousVoters": true,
+            "account": "0x4b979bb96831a0282b23d30b0bacf348fb4c6098"
         },
         "ll": {
             "password": "11",

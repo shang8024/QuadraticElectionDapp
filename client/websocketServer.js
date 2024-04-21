@@ -86,6 +86,25 @@ initializeUsers().then(() => {
             io.emit('updateUsers', users);
         });
 
+        socket.on('updateUserAccount', async (data) => {
+            const { username, account } = data;
+            try {
+                // Check if the user exists before attempting to update
+                const userExists = await db.exists(`/users/${username}`);
+                if (userExists) {
+                    // Update the user's account address in the database
+                    await db.push(`/users/${username}/account`, account, false);
+                    console.log(`Account updated for ${username}: ${account}`);
+                    io.emit('updateUsers', await db.getData("/users"));
+                } else {
+                    console.error(`No user found with username: ${username}`);
+                }
+            } catch (error) {
+                console.error('Error updating user account:', error);
+            }
+        });
+        
+
         socket.on('addUser', async (userData) => {
             await db.push(`/users/${userData.username}`, { password: userData.password, whitelisted: false, voter: false });
             const users = await db.getData("/users");

@@ -20,6 +20,7 @@ function UserPage() {
         socket.emit('requestAllUsers');  // Request all users on component mount
 
         socket.on('updateUsers', (users) => {
+            console.log("Received users data:", users);
             setAllUsers(Object.entries(users).map(([username, details]) => ({ username, ...details })));
         });
     
@@ -40,6 +41,8 @@ function UserPage() {
                 console.log("Please connect to MetaMask.");
             } else {
                 setCurrentAccount(accounts[0]);
+                console.log("Sending updated account to server:", accounts[0]);
+                socket.emit('updateUserAccount', { username: localStorage.getItem('currentUser'), account: accounts[0] });
             }
         };
 

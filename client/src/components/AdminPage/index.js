@@ -73,15 +73,21 @@ function AdminPage() {
   //add user account [ accounts[1]]
   const handleGenerateNFTs = async (username) => {
     console.log(`Generating NFT for ${username}`);
+    const user = allUsers.find(user => user.username === username);
+    console.log(`Account found for ${username}: ${user.account}`);
+    if (!user || !user.account) {
+        console.error("No account available for this user.");
+        return;
+    }
     const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
     const signer = provider.getSigner();
     const account = await signer.getAddress();
     console.log("Account:", account);
-    const checkedAddress = ethers.utils.getAddress(username);
+    //const checkedAddress = ethers.utils.getAddress(username);
     const contract = new ethers.Contract(nft_contract_address, QuadraDAOABI.abi, signer);
 
     try {
-        const transaction = await contract.safeMint(checkedAddress, 'https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66');
+        const transaction = await contract.safeMint(user.account, 'https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66');
         await transaction.wait();
         console.log(`NFT generated for ${username}`);
         socket.emit('nftGenerated', { username, message: `NFT generated for ${username}` });
@@ -123,6 +129,11 @@ function AdminPage() {
 							</ListItem>
 				))}
 			</List>
+            <Box sx={{ p: 2, border: '1px dashed grey' }}>
+                <Typography variant="body1">
+                    Admin Metamask Account: {currentAccount || 'Not Connected'}
+                </Typography>
+            </Box>
     </Container>
 	);
 }
