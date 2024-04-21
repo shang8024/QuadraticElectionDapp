@@ -11,6 +11,8 @@ contract QuadraDAO is ERC721, ERC721URIStorage, AccessControl, EIP712, ERC721Vot
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     uint256 private _nextTokenId;
 
+    event TokenMinted(uint256 indexed tokenId, address indexed to);
+
     constructor(address admin)
         ERC721("QuadraDAO", "QDAO")
         EIP712("QuadraDAO", "1")
@@ -22,6 +24,7 @@ contract QuadraDAO is ERC721, ERC721URIStorage, AccessControl, EIP712, ERC721Vot
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
+        emit TokenMinted(tokenId, to);
     }
 
     // The following functions are overrides required by Solidity.

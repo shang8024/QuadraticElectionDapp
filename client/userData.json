@@ -12,9 +12,16 @@
             "anonymousVoters": true
         },
         "uu": {
-            "password": "22",
+            "password": "11",
             "whitelisted": false,
-            "voter": false
+            "voter": true,
+            "account": "0x25189c583b51215c8754ee903e9e397fd82dd9ab",
+            "anonymousVoters": true,
+            "nftGenerated": {
+                "generated": true,
+                "tokenId": "0",
+                "uri": "https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66"
+            }
         },
         "ww": {
             "password": "11",
@@ -25,21 +32,18 @@
             "password": "11",
             "whitelisted": false,
             "voter": true,
-            "anonymousVoters": true,
-            "account": "0x4b979bb96831a0282b23d30b0bacf348fb4c6098"
+            "account": "0x25189c583b51215c8754ee903e9e397fd82dd9ab",
+            "anonymousVoters": true
         },
         "ll": {
             "password": "11",
             "whitelisted": false,
-            "voter": true,
-            "account": "0xe51ffc4601152721aaaf33ab40e48220d0f3b404",
-            "anonymousVoters": true
+            "voter": false
         },
         "yy": {
             "password": "11",
             "whitelisted": false,
-            "voter": true,
-            "anonymousVoters": true
+            "voter": false
         }
     }
 }

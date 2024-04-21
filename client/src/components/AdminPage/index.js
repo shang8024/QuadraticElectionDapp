@@ -21,6 +21,7 @@ function AdminPage() {
 
   // Fetch users from localStorage on component mount
   useEffect(() => {
+        console.log("Contract Address:", nft_contract_address);
 		socket.emit('requestAllUsers'); // Request all users on component mount
 
 		socket.on('updateUsers', users => {
@@ -55,7 +56,7 @@ function AdminPage() {
         }
         socket.off('updateUsers');
     };
-  }, []);
+  }, [nft_contract_address]);
 
   // Handler for generating NFT
 
@@ -72,6 +73,10 @@ function AdminPage() {
 
   //add user account [ accounts[1]]
   const handleGenerateNFTs = async (username) => {
+    if (!nft_contract_address) {
+        console.error("Contract address is not set.");
+        return;
+    }
     console.log(`Generating NFT for ${username}`);
     const user = allUsers.find(user => user.username === username);
     console.log(`Account found for ${username}: ${user.account}`);
@@ -89,11 +94,25 @@ function AdminPage() {
     try {
         const transaction = await contract.safeMint(user.account, 'https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66');
         await transaction.wait();
-        console.log(`NFT generated for ${username}`);
-        socket.emit('nftGenerated', { username, message: `NFT generated for ${username}` });
+        const receipt = await transaction.wait();
+        console.log("Transaction Receipt:", receipt);
+
+        if (receipt.events && receipt.events.length > 0) {
+            const tokenId = receipt.events[0].args.tokenId;
+            const tokenURI = await contract.tokenURI(tokenId);
+            console.log(`NFT generated for ${username}`, tokenId.toString(), tokenURI);
+            socket.emit('nftGenerated', { username, tokenId: tokenId.toString(), tokenURI, message: `NFT generated for ${username}` });
+        } else {
+            console.error("No events were emitted or transaction failed");
+        }
+        // const tokenId = transaction.events[0].args.tokenId;
+        // const tokenURI = await contract.tokenURI(tokenId);
+        // console.log(`NFT generated for ${username}`);
+        // socket.emit('nftGenerated', { username, tokenId: tokenId.toString(), tokenURI, message: `NFT generated for ${username}` });
     } catch (error) {
         console.error(`Error generating NFT for ${username}:`, error);
     }
+    
   };
 
 

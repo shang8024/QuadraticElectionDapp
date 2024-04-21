@@ -15,6 +15,7 @@ function UserPage() {
     const [requestedWhitelisting, setRequestedWhitelisting] = useState(false);
     const [requestedNFT, setRequestedNFT] = useState(false);
     const [currentAccount, setCurrentAccount] = useState('');
+    const [nftDetails, setNftDetails] = useState(null);
 
     useEffect(() => {
         socket.emit('requestAllUsers');  // Request all users on component mount
@@ -40,6 +41,7 @@ function UserPage() {
             if (data.username === localStorage.getItem('currentUser')) {
                 console.log(data.message);  // For debugging, can show in UI instead
                 setRequestedNFT(true); // Update state to show NFT status
+                setNftDetails(data.nft);
             }
         });
     
@@ -120,6 +122,14 @@ function UserPage() {
                         User Metamask Account: {currentAccount || 'Not Connected'}
                     </Typography>
                 </Box>
+
+                {nftDetails && (
+                    <Box sx={{ p: 2, border: '1px dashed grey' }}>
+                        <Typography variant="h6">Your NFT:</Typography>
+                        <Typography variant="body1">Token ID: {nftDetails.tokenId}</Typography>
+                        <Typography variant="body1">Token URI: {nftDetails.uri}</Typography>
+                    </Box>
+                )}
             </Box>
         </Container>
     );

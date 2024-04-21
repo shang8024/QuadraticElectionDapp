@@ -104,9 +104,16 @@ initializeUsers().then(() => {
             }
         });
 
-        socket.on('nftGenerated', (data) => {
-            // Emit to a specific user or to all users
-            io.emit('nftStatus', { username: data.username, message: "NFT successfully generated!" });
+        socket.on('nftGenerated', async (data) => {
+            const { username, tokenId, tokenURI } = data;
+            try {
+                // Update the database to indicate that the NFT has been generated
+                await db.push(`/users/${username}/nftGenerated`, { generated: true, tokenId, uri: tokenURI });
+                // Notify all clients (or just the user) that the NFT has been generated
+                io.emit('nftStatus', { username, message: "NFT successfully generated!", nft: { tokenId, uri: tokenURI } });
+            } catch (error) {
+                console.error('Error updating NFT status:', error);
+            }
         });        
         
 
