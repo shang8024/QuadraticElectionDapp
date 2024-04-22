@@ -1,0 +1,19 @@
+Architecture
+The architecture diagram is under the section 6 titled architecture. The architecture comprises of several functional components. The initial smart contracts written in Solidity are bridged to the local blockchain using Truffle. The local blockhain for development is Ganache Based. The production blockchain network used is Sepolia Testnet. The client side of the application uses react to build the front end and MetaMask to authorize voters. The front end also requires Web3js, tailwindcss and MaterialUI in order to provide a seamless front end experience. GitHub was used for CI/CD due to ease of collaboration and development. Finally, an IPFS storage was used for storing data such as user accounts. The use of GitHub allows any other developers to use the system and work upon it by submitting a pull request. 
+
+Local setup instructions 
+The required libraries are truffle, ganache and openzepplin. The installation commands and links are included below. MetaMask wallet web extension is also required.
+Library Installation Commands
+install Truffle and Ganache globally npm install -g truffle ganache-cli
+install openzeppelin: npm install @openzeppelin/contracts
+MetaMask Wallet Instructions (Cannot be done from CLI)
+https://support.metamask.io/hc/en-us/articles/360015489531-Getting-started-with-MetaMask
+Tailwind CSS: https://tailwindcss.com/ To deploy the Dapp on Azure Portal, you need a workable Azure(https://portal.azure.com/) account.
+
+Testing
+Any level of user testing can be completed on the prod version of the system using the following link: https://quadradao-app.azurewebsites.net. Testing is easy to implement since Sepolia testnet is used so no real currency is required and testing can be done seamlessly. 
+
+New Smart Contact
+In order to deploy a new smart contract run the following truffle command. This command uses truffle to convert the solidity based smart contract into a JSON like format called “abis”. 
+
+Truffle migrate -- reset
