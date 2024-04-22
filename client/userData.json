@@ -1,0 +1,73 @@
+{
+    "users": {
+        "ii": "11",
+        "ee": "11",
+        "pp": "11",
+        "oo": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": false
+        },
+        "hello": {
+            "anonymousVoters": true
+        },
+        "uu": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": true,
+            "account": "0x25189c583b51215c8754ee903e9e397fd82dd9ab",
+            "anonymousVoters": true,
+            "nftGenerated": {
+                "generated": true,
+                "tokenId": "0",
+                "uri": "https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66"
+            }
+        },
+        "ww": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": false
+        },
+        "rt": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": true,
+            "account": "0x25189c583b51215c8754ee903e9e397fd82dd9ab",
+            "anonymousVoters": true
+        },
+        "ll": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": false
+        },
+        "yy": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": false
+        },
+        "gg": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": true,
+            "account": "0x4a6cd046651ac8280b05bac620e5c00be3f908cb",
+            "anonymousVoters": true,
+            "nftGenerated": {
+                "generated": true,
+                "tokenId": "0",
+                "uri": "https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66"
+            }
+        },
+        "jkl": {
+            "password": "123",
+            "whitelisted": false,
+            "voter": true,
+            "account": "0x4a6cd046651ac8280b05bac620e5c00be3f908cb",
+            "anonymousVoters": true,
+            "nftGenerated": {
+                "generated": true,
+                "tokenId": "1",
+                "uri": "https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66"
+            }
+        }
+    }
+}

@@ -1,68 +1,137 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Container, Typography, Box, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation
+import { useNavigate } from 'react-router-dom';
+import io from 'socket.io-client';
+import { useUser } from '../../contexts/UserContext/UserContext.js';
+
+// Assuming you have a WebSocket context or connection initialized elsewhere and imported here
+// If not, you can directly initialize as shown:
+const socket = io('http://localhost:4000');
 
 function UserPage() {
-  const navigate = useNavigate();
-  const username = localStorage.getItem('currentUser');
-  // State variables to track if the user has requested whitelisting or NFTs
-  const [requestedWhitelisting, setRequestedWhitelisting] = useState(false);
-  const [requestedNFT, setRequestedNFT] = useState(false);
+    const [allUsers, setAllUsers] = useState([]);
+    const navigate = useNavigate();
+    const username = localStorage.getItem('currentUser'); // This can also be managed globally via Context API
+    const [requestedWhitelisting, setRequestedWhitelisting] = useState(false);
+    const [requestedNFT, setRequestedNFT] = useState(false);
+    const [currentAccount, setCurrentAccount] = useState('');
+    const [nftDetails, setNftDetails] = useState(null);
 
-  const updateAdminLists = (listName) => {
-    const list = JSON.parse(localStorage.getItem(listName) || '[]');
-    if (!list.includes(username)) {
-      list.push(username);
-      localStorage.setItem(listName, JSON.stringify(list));
-    }
-  };
+    useEffect(() => {
+        socket.emit('requestAllUsers');  // Request all users on component mount
 
-  const getWhitelisted = () => {
-    updateAdminLists('whitelistedUsers');
-    setRequestedWhitelisting(true); // Update state to reflect request made
-    console.log('Requesting to get whitelisted...');
-  };
+        socket.on('updateUsers', (users) => {
+            console.log("Received users data:", users);
+            setAllUsers(Object.entries(users).map(([username, details]) => ({ username, ...details })));
+        });
+    
+        socket.on('connect', () => {
+            console.log('WebSocket connected');
+        });
 
-  const getNFTsForVoting = () => {
-    updateAdminLists('anonymousVoters');
-    setRequestedNFT(true); // Update state to reflect request made
-    console.log('Requesting NFTs for anonymous voting...');
-  };
+        socket.on('disconnect', () => {
+            console.log('WebSocket disconnected');
+        });
 
-  const goToVotingPage = () => navigate('/vote');
+        socket.on('connect_error', (error) => {
+            console.error('Connection error:', error);
+        });
 
-  return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 2, // Add space between buttons
-        }}
-      >
-        <Typography component="h1" variant="h5">
-          Welcome, {username}!
-        </Typography>
-        <Button variant="contained" onClick={goToVotingPage}>Go to voting page</Button>
-        <Button 
-          variant="contained" 
-          onClick={getWhitelisted}
-          disabled={requestedWhitelisting} // Disable button after request
-        >
-          {requestedWhitelisting ? 'Requested for whitelisting' : 'Get whitelisted'}
-        </Button>
-        <Button 
-          variant="contained" 
-          onClick={getNFTsForVoting}
-          disabled={requestedNFT} // Disable button after request
-        >
-          {requestedNFT ? 'Requested for NFT' : 'Get NFTs for anonymous voting'}
-        </Button>
-      </Box>
-    </Container>
-  );
+        socket.on('nftStatus', (data) => {
+            if (data.username === localStorage.getItem('currentUser')) {
+                console.log(data.message);  // For debugging, can show in UI instead
+                setRequestedNFT(true); // Update state to show NFT status
+                setNftDetails(data.nft);
+            }
+        });
+    
+
+        const handleAccountsChanged = (accounts) => {
+            if (accounts.length === 0) {
+                console.log("Please connect to MetaMask.");
+            } else {
+                setCurrentAccount(accounts[0]);
+                console.log("Sending updated account to server:", accounts[0]);
+                socket.emit('updateUserAccount', { username: localStorage.getItem('currentUser'), account: accounts[0] });
+            }
+        };
+
+        if (window.ethereum) {
+            window.ethereum.request({ method: 'eth_accounts' })
+                .then(handleAccountsChanged)
+                .catch((err) => {
+                    console.error(err);
+                 });
+
+            window.ethereum.on('accountsChanged', handleAccountsChanged);
+        }
+
+        return () => {
+            socket.off('connect');
+            socket.off('disconnect');
+            socket.off('connect_error');
+            socket.off('updateUsers');
+            socket.off('nftStatus');
+            if (window.ethereum) {
+                window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+            }
+            };
+        }, []);
+
+    const updateAdminLists = (listName) => {
+        socket.emit('updateList', { listName, username });
+    };
+
+    const requestFeature = (feature) => {
+        socket.emit('updateList', { username, listName: feature });
+        if (feature === 'whitelistedUsers') {
+            setRequestedWhitelisting(true);
+        } else if (feature === 'anonymousVoters') {
+            setRequestedNFT(true);
+            socket.emit('requestNFT', username ); 
+            console.log(typeof(username));
+        }
+    };
+
+    const goToVotingPage = () => navigate('/vote');
+
+    return (
+        <Container component="main" maxWidth="xs">
+            <Box
+                sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 2,
+                }}
+            >
+                <Typography component="h1" variant="h5">
+                    Welcome, {username}!
+                </Typography>
+                <Button variant="contained" onClick={goToVotingPage}>Go to voting page</Button>
+                <Button variant="contained" onClick={() => requestFeature('whitelistedUsers')} disabled={requestedWhitelisting}>
+                    {requestedWhitelisting ? 'Requested for whitelisting' : 'Get whitelisted'}
+                </Button>
+                <Button variant="contained" onClick={() => requestFeature('anonymousVoters')} disabled={requestedNFT}>
+                    {requestedNFT ? 'Requested for NFT' : 'Get NFTs for anonymous voting'}
+                </Button>
+                <Box sx={{ p: 2, border: '1px dashed grey' }}>
+                    <Typography variant="body1">
+                        User Metamask Account: {currentAccount || 'Not Connected'}
+                    </Typography>
+                </Box>
+
+                {nftDetails && (
+                    <Box sx={{ p: 2, border: '1px dashed grey' }}>
+                        <Typography variant="h6">Your NFT:</Typography>
+                        <Typography variant="body1">Token ID: {nftDetails.tokenId}</Typography>
+                        <Typography variant="body1">Token URI: {nftDetails.uri}</Typography>
+                    </Box>
+                )}
+            </Box>
+        </Container>
+    );
 }
 
 export default UserPage;
