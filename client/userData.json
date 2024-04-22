@@ -44,6 +44,30 @@
             "password": "11",
             "whitelisted": false,
             "voter": false
+        },
+        "gg": {
+            "password": "11",
+            "whitelisted": false,
+            "voter": true,
+            "account": "0x4a6cd046651ac8280b05bac620e5c00be3f908cb",
+            "anonymousVoters": true,
+            "nftGenerated": {
+                "generated": true,
+                "tokenId": "0",
+                "uri": "https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66"
+            }
+        },
+        "jkl": {
+            "password": "123",
+            "whitelisted": false,
+            "voter": true,
+            "account": "0x4a6cd046651ac8280b05bac620e5c00be3f908cb",
+            "anonymousVoters": true,
+            "nftGenerated": {
+                "generated": true,
+                "tokenId": "1",
+                "uri": "https://ipfs.io/ipfs/QmS6pfArdSefpB9F3uemwvrACdexTiQuQ1iAonMhmyBw66"
+            }
         }
     }
 }
