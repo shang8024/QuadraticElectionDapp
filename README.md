@@ -1,3 +1,6 @@
+## Final Report
+The final report is under the folder titled "Final Report". 
+
 # Quadratic DAO 
 
 The app is deployed on: https://quadradao-app.azurewebsites.net
